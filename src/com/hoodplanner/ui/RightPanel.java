@@ -47,7 +47,7 @@ public class RightPanel extends JPanel{
                     case "Yellow" -> selectedRoom.setColor(new Color(130, 131, 40));
                 }
 
-                leftPanel.repaint();
+                this.leftPanel.repaint();
             }
         });
     }

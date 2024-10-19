@@ -1,5 +1,6 @@
 package hoodplanner.ui;
 
+import hoodplanner.models.Room;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -10,6 +11,7 @@ import javax.swing.JLabel;
 
 public class RoomLabel extends JLabel {
 
+    private Room room;
     private Point initialClick;
     private boolean resizing = false;
     private Color color = new Color(155, 40, 40, 255); // Keep initial color with opacity, but no changes later
@@ -17,7 +19,13 @@ public class RoomLabel extends JLabel {
     private final int RESIZE_MARGIN = 40;
     private MouseAdapter extraAdapter;
 
-    public RoomLabel(int width, int height) {
+    public RoomLabel(Room room) {
+        this.room = room;
+
+        int width = (int) room.getLength();
+        int height = (int) room.getWidth();
+
+        setBounds((int) room.getX(), (int) room.getY(), width, height);
         setOpaque(true);
         setBackground(color); // Use initial color without modifying opacity during interactions
         setPreferredSize(new Dimension(width, height));
@@ -114,6 +122,20 @@ public class RoomLabel extends JLabel {
                 }
             }
         });
+    }
+
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+        room.setX(x);
+        room.setY(y);
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        room.setLength(width);
+        room.setWidth(height);
     }
 
     public Color getColor() {

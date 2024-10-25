@@ -16,6 +16,10 @@ public class FloorPlan {
         rooms.add(room);
     }
 
+    public void removeRoom(Room room) {
+        rooms.remove(room);
+    }
+
     public List<Room> getRooms() {
         return rooms;
     }

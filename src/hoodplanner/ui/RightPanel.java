@@ -2,6 +2,7 @@ package hoodplanner.ui;
 
 import java.awt.CardLayout;
 import java.awt.Color;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ public class RightPanel extends JPanel {
     private final JPanel addRoomPanel;
     private final JPanel addItemPanel;
     private final CardLayout cardLayout;
+    private final JButton removeRoomButton;
 
     public RightPanel(LeftPanel leftPanel) {
         this.leftPanel = leftPanel;
@@ -55,6 +57,23 @@ public class RightPanel extends JPanel {
                     case "Yellow" -> selectedRoom.setColor(new Color(130, 131, 40));
                 }
                 this.leftPanel.repaint();
+            }
+        });
+
+        // "Remove Room" button
+        removeRoomButton = new JButton("Remove Room");
+        removeRoomButton.setBounds(10, 140, 200, 25);
+        addRoomPanel.add(removeRoomButton);
+
+        // Add listener for "Remove Room" button
+        removeRoomButton.addActionListener(e -> {
+            if (selectedRoom != null) {
+                leftPanel.remove(selectedRoom); // Remove room label from LeftPanel
+                leftPanel.revalidate();
+                leftPanel.repaint();
+                selectedRoom = null; // Clear selection in RightPanel
+                positionLabel.setText("Position: ");
+                dimensionLabel.setText("Dimensions: ");
             }
         });
 

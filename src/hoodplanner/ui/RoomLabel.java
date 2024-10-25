@@ -143,6 +143,10 @@ public class RoomLabel extends JLabel implements Movable {
         room.setWidth(height);
     }
 
+    public Room getRoom() {
+        return room;
+    }
+
     public Color getColor() {
         return color;
     }

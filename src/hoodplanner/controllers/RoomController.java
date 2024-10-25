@@ -7,16 +7,21 @@ import hoodplanner.ui.RightPanel;
 import hoodplanner.ui.RoomLabel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomController {
     private final FloorPlan floorPlan;
+    private final List<RoomLabel> roomLabels;
 
     public RoomController(FloorPlan floorPlan) {
         this.floorPlan = floorPlan;
+        this.roomLabels = new ArrayList<>();
     }
 
     public void createRoomLabel(Room room, LeftPanel leftPanel, RightPanel rightPanel) {
         RoomLabel roomLabel = new RoomLabel(room);
+        roomLabels.add(roomLabel); // Add to list
         leftPanel.add(roomLabel);
         leftPanel.revalidate();
         leftPanel.repaint();
@@ -34,6 +39,13 @@ public class RoomController {
         });
     }
 
+    public void deleteRoomLabel(RoomLabel roomLabel, LeftPanel leftPanel) {
+        roomLabels.remove(roomLabel); // Remove from list
+        leftPanel.remove(roomLabel);
+        leftPanel.revalidate();
+        leftPanel.repaint();
+    }
+
     public void addRoom(int width, int height, LeftPanel leftPanel, RightPanel rightPanel) {
         Room room = new Room(width, height);
         floorPlan.addRoom(room);
@@ -41,5 +53,21 @@ public class RoomController {
         createRoomLabel(room, leftPanel, rightPanel);
     }
 
-    // Other methods for room movement, resizing, etc.
+    public void deleteRoom(Room room, LeftPanel leftPanel) {
+        floorPlan.removeRoom(room);
+
+        // Find the RoomLabel associated with the Room
+        RoomLabel roomLabelToDelete = null;
+        for (RoomLabel label : roomLabels) {
+            if (label.getRoom().equals(room)) {
+                roomLabelToDelete = label;
+                break;
+            }
+        }
+
+        // Delete the RoomLabel if found
+        if (roomLabelToDelete != null) {
+            deleteRoomLabel(roomLabelToDelete, leftPanel);
+        }
+    }
 }

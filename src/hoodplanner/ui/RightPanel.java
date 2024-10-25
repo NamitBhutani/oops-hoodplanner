@@ -1,40 +1,48 @@
 package hoodplanner.ui;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class RightPanel extends JPanel{
+public class RightPanel extends JPanel {
 
     private RoomLabel selectedRoom;
-    LeftPanel leftPanel;
-    JLabel positionLabel;
-    JLabel dimensionLabel;
-    JComboBox<String> colorDropdown;
-
+    private final LeftPanel leftPanel;
+    private final JLabel positionLabel;
+    private final JLabel dimensionLabel;
+    private final JComboBox<String> colorDropdown;
+    private final JPanel addRoomPanel;
+    private final JPanel addItemPanel;
+    private final CardLayout cardLayout;
 
     public RightPanel(LeftPanel leftPanel) {
-        setLayout(null); // Set layout to null for manual component positioning
-        // Labels to show selected room's properties
         this.leftPanel = leftPanel;
+
+        cardLayout = new CardLayout();
+        setLayout(cardLayout);
+
+        // Panel for the 'Add Room' view
+        addRoomPanel = new JPanel();
+        addRoomPanel.setLayout(null);
         positionLabel = new JLabel("Position: ");
-        positionLabel.setBounds(10, 10, 300, 25); 
+        positionLabel.setBounds(10, 10, 300, 25);
         dimensionLabel = new JLabel("Dimensions: ");
         dimensionLabel.setBounds(10, 40, 300, 25);
 
-        add(positionLabel);
-        add(dimensionLabel);
+        addRoomPanel.add(positionLabel);
+        addRoomPanel.add(dimensionLabel);
 
-        // Dropdown for color selection
-        String[] colors = {"Red", "Blue", "Green", "Yellow"};
+        // Dropdown for color selection in 'Add Room' view
+        String[] colors = { "Red", "Blue", "Green", "Yellow" };
         colorDropdown = new JComboBox<>(colors);
         JLabel colorLabel = new JLabel("Select Room Color:");
-        colorLabel.setBounds(10, 70, 300, 25); // Set bounds for manual positioning
-        colorDropdown.setBounds(10, 100, 200, 25); // Set bounds for manual positioning
+        colorLabel.setBounds(10, 70, 300, 25);
+        colorDropdown.setBounds(10, 100, 200, 25);
 
-        add(colorLabel);
-        add(colorDropdown);
+        addRoomPanel.add(colorLabel);
+        addRoomPanel.add(colorDropdown);
 
         // Add listener for color changes
         colorDropdown.addActionListener(e -> {
@@ -46,19 +54,38 @@ public class RightPanel extends JPanel{
                     case "Green" -> selectedRoom.setColor(new Color(40, 155, 40));
                     case "Yellow" -> selectedRoom.setColor(new Color(130, 131, 40));
                 }
-
                 this.leftPanel.repaint();
             }
         });
+
+        // Panel for the 'Add Items' view
+        addItemPanel = new JPanel();
+        addItemPanel.setLayout(null);
+        JLabel addItemLabel = new JLabel("Add Items Panel");
+        addItemLabel.setBounds(10, 10, 300, 25);
+        addItemPanel.add(addItemLabel);
+
+        // Add both views to the CardLayout
+        add(addRoomPanel, "AddRoom");
+        add(addItemPanel, "AddItem");
     }
 
+    // Method to switch to the 'Add Room' view
+    public void showAddRoomView() {
+        cardLayout.show(this, "AddRoom");
+    }
+
+    // Method to switch to the 'Add Items' view
+    public void showAddItemView() {
+        cardLayout.show(this, "AddItem");
+    }
 
     public void setSelectedRoom(RoomLabel room) {
         selectedRoom = room;
         update(room);
     }
 
-    // Method to update the right panel with a room's properties
+    // Method to update the 'Add Room' panel with a room's properties
     private void update(RoomLabel room) {
         if (room == null) {
             return;

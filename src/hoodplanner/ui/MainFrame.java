@@ -5,19 +5,16 @@ import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Room;
 import javax.swing.*;
 
-
 public class MainFrame extends JFrame {
 
     public MainFrame(RoomController roomController, FloorPlan floorPlan) {
-
-        TopMenuBar menuBar = new TopMenuBar();
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setResizeWeight(0.8);
-
         LeftPanel leftPanel = new LeftPanel();
 
         RightPanel rightPanel = new RightPanel(leftPanel);
+        TopMenuBar menuBar = new TopMenuBar(rightPanel);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setResizeWeight(0.8);
 
         // Loop through all rooms in the floor plan and add them to the left panel
         for (Room room : floorPlan.getRooms()) {
@@ -46,4 +43,3 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 }
-

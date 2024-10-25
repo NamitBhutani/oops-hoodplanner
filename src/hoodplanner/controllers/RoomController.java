@@ -13,8 +13,6 @@ public class RoomController {
 
     public RoomController(FloorPlan floorPlan) {
         this.floorPlan = floorPlan;
-
-
     }
 
     public void createRoomLabel(Room room, LeftPanel leftPanel, RightPanel rightPanel) {

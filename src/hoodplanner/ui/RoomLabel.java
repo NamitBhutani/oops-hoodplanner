@@ -8,8 +8,9 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
+import hoodplanner.models.Movable;
 
-public class RoomLabel extends JLabel {
+public class RoomLabel extends JLabel implements Movable {
 
     private Room room;
     private Point initialClick;
@@ -81,7 +82,6 @@ public class RoomLabel extends JLabel {
         });
 
         addMouseMotionListener(new MouseAdapter() {
-
             @Override
             public void mouseMoved(MouseEvent e) {
                 int width = getWidth();
@@ -95,6 +95,7 @@ public class RoomLabel extends JLabel {
                     // setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
             }
+
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (resizing) {
@@ -107,21 +108,25 @@ public class RoomLabel extends JLabel {
                     setSize(newWidth, newHeight);
                     setBackground(color); // Ensure the background color remains the same without changing opacity
                 } else {
-                    // Dragging the room logic
-                    int thisX = getLocation().x;
-                    int thisY = getLocation().y;
-
-                    int xMoved = e.getX() - initialClick.x;
-                    int yMoved = e.getY() - initialClick.y;
-
-                    int X = thisX + xMoved;
-                    int Y = thisY + yMoved;
-
-                    setLocation(X, Y);
-                    
+                    move(e); // Invoke move if Movable
                 }
             }
         });
+    }
+
+    @Override
+    public void move(MouseEvent e) {
+        // Movement logic for RoomLabel
+        int thisX = getLocation().x;
+        int thisY = getLocation().y;
+
+        int xMoved = e.getX() - initialClick.x;
+        int yMoved = e.getY() - initialClick.y;
+
+        int X = thisX + xMoved;
+        int Y = thisY + yMoved;
+
+        setLocation(X, Y);
     }
 
     @Override

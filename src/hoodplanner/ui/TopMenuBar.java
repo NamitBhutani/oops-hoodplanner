@@ -5,13 +5,17 @@ import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TopMenuBar extends JMenuBar {
 
     private final List<JMenuItem> menuItems = new ArrayList<>();
+    private final RightPanel rightPanel;
 
-    public TopMenuBar() {
+    public TopMenuBar(RightPanel rightPanel) {
+        this.rightPanel = rightPanel;
+
         JMenu fileMenu = new JMenu("File");
         JMenu addMenu = new JMenu("Add");
 
@@ -26,16 +30,28 @@ public class TopMenuBar extends JMenuBar {
 
         menuItems.add(addRoomItem);
         menuItems.add(addItemItem);
+
+        addRoomItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Add Room clicked");
+                rightPanel.showAddRoomView();
+            }
+        });
+
+        addItemItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Add Item clicked");
+                rightPanel.showAddItemView();
+            }
+        });
     }
 
     public JMenuItem getItem(String itemName) {
-        
-        JMenuItem reqItem = menuItems.stream()
+        return menuItems.stream()
                 .filter(item -> item.getText().equals(itemName))
                 .findFirst()
                 .orElse(null);
-
-        return reqItem;
     }
-    
 }

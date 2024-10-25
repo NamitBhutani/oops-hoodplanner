@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import hoodplanner.models.RoomType;
 
 public class RightPanel extends JPanel {
 
@@ -13,7 +14,7 @@ public class RightPanel extends JPanel {
     private final LeftPanel leftPanel;
     private final JLabel positionLabel;
     private final JLabel dimensionLabel;
-    private final JComboBox<String> colorDropdown;
+    private final JComboBox<RoomType> roomTypeDropdown;
     private final JPanel addRoomPanel;
     private final JPanel addItemPanel;
     private final CardLayout cardLayout;
@@ -36,26 +37,20 @@ public class RightPanel extends JPanel {
         addRoomPanel.add(positionLabel);
         addRoomPanel.add(dimensionLabel);
 
-        // Dropdown for color selection in 'Add Room' view
-        String[] colors = { "Red", "Blue", "Green", "Yellow" };
-        colorDropdown = new JComboBox<>(colors);
-        JLabel colorLabel = new JLabel("Select Room Color:");
-        colorLabel.setBounds(10, 70, 300, 25);
-        colorDropdown.setBounds(10, 100, 200, 25);
+        // Dropdown for room type selection
+        roomTypeDropdown = new JComboBox<>(RoomType.values());
+        JLabel typeLabel = new JLabel("Select Room Type:");
+        typeLabel.setBounds(10, 70, 300, 25);
+        roomTypeDropdown.setBounds(10, 100, 200, 25);
 
-        addRoomPanel.add(colorLabel);
-        addRoomPanel.add(colorDropdown);
+        addRoomPanel.add(typeLabel);
+        addRoomPanel.add(roomTypeDropdown);
 
-        // Add listener for color changes
-        colorDropdown.addActionListener(e -> {
+        // Add listener for room type changes
+        roomTypeDropdown.addActionListener(e -> {
             if (selectedRoom != null) {
-                String selectedColor = (String) colorDropdown.getSelectedItem();
-                switch (selectedColor) {
-                    case "Red" -> selectedRoom.setColor(new Color(155, 40, 40));
-                    case "Blue" -> selectedRoom.setColor(new Color(40, 40, 155));
-                    case "Green" -> selectedRoom.setColor(new Color(40, 155, 40));
-                    case "Yellow" -> selectedRoom.setColor(new Color(130, 131, 40));
-                }
+                RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                selectedRoom.setColor(selectedType.getColor());
                 this.leftPanel.repaint();
             }
         });
@@ -118,16 +113,12 @@ public class RightPanel extends JPanel {
         positionLabel.setText("Position: X = " + x + ", Y = " + y);
         dimensionLabel.setText("Dimensions: Width = " + width + ", Height = " + height);
 
-        // Update the dropdown based on the current room's color
         Color bgColor = room.getBackground();
-        if (bgColor.equals(new Color(155, 40, 40))) {
-            colorDropdown.setSelectedItem("Red");
-        } else if (bgColor.equals(new Color(40, 40, 155))) {
-            colorDropdown.setSelectedItem("Blue");
-        } else if (bgColor.equals(new Color(40, 155, 40))) {
-            colorDropdown.setSelectedItem("Green");
-        } else if (bgColor.equals(new Color(130, 131, 40))) {
-            colorDropdown.setSelectedItem("Yellow");
+        for (RoomType type : RoomType.values()) {
+            if (bgColor.equals(type.getColor())) {
+                roomTypeDropdown.setSelectedItem(type);
+                break;
+            }
         }
     }
 }

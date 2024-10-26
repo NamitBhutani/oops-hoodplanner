@@ -2,8 +2,8 @@ package hoodplanner.controllers;
 
 import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Wall;
-import hoodplanner.models.Window; // Assuming you have a Window class
-import hoodplanner.models.Door; // Assuming you have a Door class
+import hoodplanner.models.Window;
+import hoodplanner.models.Door;
 import hoodplanner.ui.LeftPanel;
 import hoodplanner.ui.RightPanel;
 import hoodplanner.ui.WallLabel;

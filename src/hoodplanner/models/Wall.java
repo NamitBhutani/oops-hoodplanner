@@ -3,7 +3,7 @@ package hoodplanner.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Wall extends FloorObject {
+public class Wall extends Room {
     private final List<Door> doors; // List to store doors
     private final List<Window> windows; // List to store windows
 

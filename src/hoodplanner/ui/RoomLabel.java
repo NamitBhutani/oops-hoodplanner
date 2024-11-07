@@ -1,6 +1,7 @@
 package hoodplanner.ui;
 
 import hoodplanner.models.Room;
+import hoodplanner.controllers.RoomController;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -15,22 +16,28 @@ public class RoomLabel extends JLabel implements Movable {
     private Room room;
     private Point initialClick;
     private boolean resizing = false;
-    private Color color = new Color(155, 40, 40, 255); // Keep initial color with opacity, but no changes later
+    private Color color = new Color(155, 40, 40, 255); // Initial color
     private final int SNAP_SIZE = 50;
     private final int RESIZE_MARGIN = 40;
     private MouseAdapter extraAdapter;
+    private RoomController roomController;
+    private Point lastValidPosition;
+    private Dimension lastValidSize;
 
-    public RoomLabel(Room room) {
+    public RoomLabel(Room room, RoomController roomController) {
         this.room = room;
-
+        this.roomController = roomController;
         int width = (int) room.getLength();
         int height = (int) room.getWidth();
 
         setBounds((int) room.getX(), (int) room.getY(), width, height);
         setOpaque(true);
-        setBackground(color); // Use initial color without modifying opacity during interactions
+        setBackground(color);
         setPreferredSize(new Dimension(width, height));
 
+        // init last valid position and size
+        lastValidPosition = getLocation();
+        lastValidSize = getSize();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -55,6 +62,10 @@ public class RoomLabel extends JLabel implements Movable {
                     Y = (Y / SNAP_SIZE) * SNAP_SIZE;
                     setLocation(X, Y);
                 }
+
+                // save the position and size after a legal release
+                lastValidPosition = getLocation();
+                lastValidSize = getSize();
             }
 
             @Override
@@ -63,14 +74,15 @@ public class RoomLabel extends JLabel implements Movable {
                 int width = getWidth();
                 int height = getHeight();
 
-                // Check if the click is within the resize margin (bottom-right corner)
                 if (initialClick.x >= width - RESIZE_MARGIN && initialClick.y >= height - RESIZE_MARGIN) {
                     resizing = true;
-                    System.out.println("Resizing");
                     setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
                 } else {
                     getComponentAt(initialClick);
                 }
+
+                lastValidPosition = getLocation();
+                lastValidSize = getSize();
             }
 
             @Override
@@ -83,32 +95,33 @@ public class RoomLabel extends JLabel implements Movable {
 
         addMouseMotionListener(new MouseAdapter() {
             @Override
-            public void mouseMoved(MouseEvent e) {
-                int width = getWidth();
-                int height = getHeight();
-                setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-
-                // Check if the mouse is within the resize margin (bottom-right corner)
-                if (e.getX() >= width - RESIZE_MARGIN && e.getY() >= height - RESIZE_MARGIN) {
-                    System.out.println("Resize cursor");
-                } else {
-                    // setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                }
-            }
-
-            @Override
             public void mouseDragged(MouseEvent e) {
                 if (resizing) {
                     // Resizing logic
                     int newWidth = e.getX();
                     int newHeight = e.getY();
 
-                    // Set new size during drag
                     setPreferredSize(new Dimension(newWidth, newHeight));
                     setSize(newWidth, newHeight);
-                    setBackground(color); // Ensure the background color remains the same without changing opacity
+
+                    // Check for overlap after resizing
+                    if (roomController.isOverlappingAny(RoomLabel.this)) {
+                        System.out.println("Overlap detected during resize! Reverting to last valid size.");
+                        setSize(lastValidSize);
+                    } else {
+                        lastValidSize = getSize();
+                    }
+
                 } else {
-                    move(e); // Invoke move if Movable
+                    move(e);
+
+                    // Check for overlap after moving
+                    if (roomController.isOverlappingAny(RoomLabel.this)) {
+                        System.out.println("Overlap detected during move! Reverting to last valid position.");
+                        setLocation(lastValidPosition);
+                    } else {
+                        lastValidPosition = getLocation();
+                    }
                 }
             }
         });

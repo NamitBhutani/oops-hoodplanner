@@ -20,7 +20,7 @@ public class RoomController {
     }
 
     public void createRoomLabel(Room room, LeftPanel leftPanel, RightPanel rightPanel) {
-        RoomLabel roomLabel = new RoomLabel(room);
+        RoomLabel roomLabel = new RoomLabel(room, this);
         roomLabels.add(roomLabel); // Add to list
         leftPanel.add(roomLabel);
         leftPanel.revalidate();
@@ -69,5 +69,14 @@ public class RoomController {
         if (roomLabelToDelete != null) {
             deleteRoomLabel(roomLabelToDelete, leftPanel);
         }
+    }
+
+    public boolean isOverlappingAny(RoomLabel roomLabel) {
+        for (RoomLabel otherLabel : roomLabels) {
+            if (roomLabel != otherLabel && roomLabel.getRoom().checkOverlap(otherLabel.getRoom())) {
+                return true; // Overlap detected
+            }
+        }
+        return false; // No overlap
     }
 }

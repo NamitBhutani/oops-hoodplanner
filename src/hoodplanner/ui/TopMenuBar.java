@@ -5,48 +5,48 @@ import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import hoodplanner.models.FloorObject;
 
 public class TopMenuBar extends JMenuBar {
 
     private final List<JMenuItem> menuItems = new ArrayList<>();
     private final RightPanel<? extends FloorObject, ? extends ObjectLabel<? extends FloorObject>> rightPanel;
+    private final JMenu fileMenu;
+    private final JMenu addMenu;
 
     public TopMenuBar(RightPanel<? extends FloorObject, ? extends ObjectLabel<? extends FloorObject>> rightPanel) {
         this.rightPanel = rightPanel;
 
-        JMenu fileMenu = new JMenu("File");
-        JMenu addMenu = new JMenu("Add");
+        fileMenu = new JMenu("File");
+        addMenu = new JMenu("Add");
 
         add(fileMenu);
         add(addMenu);
 
         JMenuItem addRoomItem = new JMenuItem("Add Room");
         JMenuItem addItemItem = new JMenuItem("Add Items");
+        JMenuItem saveItem = new JMenuItem("Save");
+        JMenuItem loadItem = new JMenuItem("Load");
 
         addMenu.add(addRoomItem);
         addMenu.add(addItemItem);
+        fileMenu.add(saveItem);
+        fileMenu.add(loadItem);
 
         menuItems.add(addRoomItem);
         menuItems.add(addItemItem);
+        menuItems.add(saveItem);
+        menuItems.add(loadItem);
 
-        addRoomItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Add Room clicked");
-                rightPanel.showAddObjectView();
-            }
+        // Action Listeners
+        addRoomItem.addActionListener(e -> {
+            System.out.println("Add Room clicked");
+            rightPanel.showAddObjectView();
         });
 
-        addItemItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Add Item clicked");
-                // For now, we just show the Add Items view
-                rightPanel.showAddItemView();
-            }
+        addItemItem.addActionListener(e -> {
+            System.out.println("Add Item clicked");
+            rightPanel.showAddItemView();
         });
     }
 

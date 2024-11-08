@@ -1,41 +1,46 @@
 package hoodplanner.models;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FloorPlan {
+public class FloorPlan implements Serializable {
     public String name;
-    private final List<Room> rooms;
+    private final List<FloorObject> floorObjects;
 
     public FloorPlan(String name) {
         this.name = name;
-        rooms = new ArrayList<>();
+        floorObjects = new ArrayList<>();
     }
 
-    public void addRoom(Room room) {
-        rooms.add(room);
+    public void addFloorObject(FloorObject floorObject) {
+        floorObjects.add(floorObject);
     }
 
-    public void removeRoom(Room room) {
-        rooms.remove(room);
+    public void removeFloorObject(FloorObject floorObject) {
+        floorObjects.remove(floorObject);
     }
 
-    public List<Room> getRooms() {
-        return rooms;
+    public List<FloorObject> getFloorObjects() {
+        return floorObjects;
     }
 
-    public void save() {
-        // Save the floor plan to a file
+    public void saveToFile(String filePath) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(this);
+        }
+    }
+
+    public static FloorPlan loadFromFile(String filePath) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
+            return (FloorPlan) ois.readObject();
+        }
     }
 
     public static FloorPlan load() {
-        // TODO: Load the floor plan from a file
-
-        // For now return a sample floor plan
         FloorPlan floorPlan = new FloorPlan("Sample Floor Plan");
-        floorPlan.addRoom(new Room(100, 100, 0, 0));
-        floorPlan.addRoom(new Room(200, 200, 100, 200));
-
+        floorPlan.addFloorObject(new Room(100, 100, 0, 0));
+        floorPlan.addFloorObject(new Room(200, 200, 100, 200));
         return floorPlan;
     }
 }

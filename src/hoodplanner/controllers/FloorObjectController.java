@@ -50,4 +50,13 @@ public abstract class FloorObjectController<T extends FloorObject, L extends Obj
     public List<L> getObjectLabels() {
         return objectLabels;
     }
+
+    public L getObjectLabel(T object) {
+        for (L label : objectLabels) {
+            if (label.getObject().equals(object)) {
+                return label;
+            }
+        }
+        return null;
+    }
 }

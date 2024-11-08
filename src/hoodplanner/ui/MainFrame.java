@@ -11,16 +11,14 @@ public class MainFrame extends JFrame {
     private final RoomController roomController;
 
     public MainFrame(List<FloorObjectController<?, ?>> controllers, FloorPlan floorPlan) {
+        this.roomController = new RoomController(floorPlan);
         LeftPanel leftPanel = new LeftPanel();
 
-        RightPanel<Room, RoomLabel> rightPanel = new RightPanel<>(leftPanel);
+        RightPanel<Room, RoomLabel> rightPanel = new RightPanel<>(leftPanel, roomController);
         TopMenuBar menuBar = new TopMenuBar(rightPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setResizeWeight(0.8);
-
-        this.roomController = new RoomController(floorPlan);
-
         // Loop through each controller and add objects to the left panel
         for (FloorObjectController<?, ?> controller : controllers) {
             for (Object label : controller.getObjectLabels()) {

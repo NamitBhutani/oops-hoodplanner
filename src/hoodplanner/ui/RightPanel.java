@@ -6,6 +6,9 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import hoodplanner.controllers.FloorObjectController;
+import hoodplanner.controllers.RoomController;
 import hoodplanner.models.FloorObject;
 import hoodplanner.models.RoomType;
 import hoodplanner.models.Room;
@@ -21,10 +24,11 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     private final JPanel addItemPanel;
     private final CardLayout cardLayout;
     private final JButton removeObjectButton;
+    private final RoomController roomController;
 
-    public RightPanel(LeftPanel leftPanel) {
+    public RightPanel(LeftPanel leftPanel, RoomController roomController) {
         this.leftPanel = leftPanel;
-
+        this.roomController = roomController;
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
@@ -56,16 +60,15 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
             }
         });
 
-        removeObjectButton = new JButton("Remove Object");
+        removeObjectButton = new JButton("Remove Room");
         removeObjectButton.setBounds(10, 140, 200, 25);
         addObjectPanel.add(removeObjectButton);
 
         removeObjectButton.addActionListener(e -> {
-            if (selectedObjectLabel != null) {
-                leftPanel.remove(selectedObjectLabel);
-                leftPanel.revalidate();
-                leftPanel.repaint();
-                selectedObjectLabel = null;
+            if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
+                Room room = (Room) selectedObjectLabel.getObject();
+                roomController.deleteRoom(room, leftPanel); // Call deleteRoom on roomController
+                selectedObjectLabel = null; // Clear selection
                 positionLabel.setText("Position: ");
                 dimensionLabel.setText("Dimensions: ");
             }

@@ -53,6 +53,8 @@ public class MainFrame extends JFrame {
                 try {
                     FloorPlan loadedFloorPlan = FloorPlan.loadFromFile(fileChooser.getSelectedFile().getPath());
                     loadFloorPlan(loadedFloorPlan);
+                    leftPanel.revalidate();
+                    leftPanel.repaint();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Failed to load floor plan", "Error",
@@ -90,15 +92,13 @@ public class MainFrame extends JFrame {
         roomController.setFloorPlan(floorPlan);
         leftPanel.removeAll();
 
-        List<FloorObject> floorObjectsCopy = new ArrayList<>(floorPlan.getFloorObjects());
-
-        for (FloorObject floorObject : floorObjectsCopy) {
-            System.out.println(floorObject);
+        for (FloorObject floorObject : floorPlan.getFloorObjects()) {
             if (floorObject instanceof Room) {
-                System.out.println("Adding room" + floorObject);
                 Room room = (Room) floorObject;
-                roomController.addRoom(room.getWidth(), room.getHeight(), leftPanel, rightPanel);
+                RoomLabel roomLabel = new RoomLabel(room, roomController);
+                roomController.createObjectLabel(room, roomLabel, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
             } else if (floorObject instanceof Furniture) {
+                // Handle loading of Furniture objects
             }
         }
         leftPanel.revalidate();

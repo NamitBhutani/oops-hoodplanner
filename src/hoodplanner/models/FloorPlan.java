@@ -39,8 +39,6 @@ public class FloorPlan implements Serializable {
 
     public static FloorPlan load() {
         FloorPlan floorPlan = new FloorPlan("Sample Floor Plan");
-        floorPlan.addFloorObject(new Room(100, 100, 0, 0));
-        floorPlan.addFloorObject(new Room(200, 200, 100, 200));
         return floorPlan;
     }
 }

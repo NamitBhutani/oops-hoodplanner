@@ -6,19 +6,21 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import hoodplanner.models.FloorObject;
 import hoodplanner.models.RoomType;
+import hoodplanner.models.Room;
 
-public class RightPanel extends JPanel {
+public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends JPanel {
 
-    private RoomLabel selectedRoom;
+    private L selectedObjectLabel;
     private final LeftPanel leftPanel;
     private final JLabel positionLabel;
     private final JLabel dimensionLabel;
     private final JComboBox<RoomType> roomTypeDropdown;
-    private final JPanel addRoomPanel;
+    private final JPanel addObjectPanel;
     private final JPanel addItemPanel;
     private final CardLayout cardLayout;
-    private final JButton removeRoomButton;
+    private final JButton removeObjectButton;
 
     public RightPanel(LeftPanel leftPanel) {
         this.leftPanel = leftPanel;
@@ -26,99 +28,96 @@ public class RightPanel extends JPanel {
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
-        // Panel for the 'Add Room' view
-        addRoomPanel = new JPanel();
-        addRoomPanel.setLayout(null);
+        addObjectPanel = new JPanel();
+        addObjectPanel.setLayout(null);
         positionLabel = new JLabel("Position: ");
         positionLabel.setBounds(10, 10, 300, 25);
         dimensionLabel = new JLabel("Dimensions: ");
         dimensionLabel.setBounds(10, 40, 300, 25);
 
-        addRoomPanel.add(positionLabel);
-        addRoomPanel.add(dimensionLabel);
+        addObjectPanel.add(positionLabel);
+        addObjectPanel.add(dimensionLabel);
 
-        // Dropdown for room type selection
         roomTypeDropdown = new JComboBox<>(RoomType.values());
         JLabel typeLabel = new JLabel("Select Room Type:");
         typeLabel.setBounds(10, 70, 300, 25);
         roomTypeDropdown.setBounds(10, 100, 200, 25);
 
-        addRoomPanel.add(typeLabel);
-        addRoomPanel.add(roomTypeDropdown);
+        addObjectPanel.add(typeLabel);
+        addObjectPanel.add(roomTypeDropdown);
 
-        // Add listener for room type changes
         roomTypeDropdown.addActionListener(e -> {
-            if (selectedRoom != null) {
-                RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
-                selectedRoom.setColor(selectedType.getColor());
-                this.leftPanel.repaint();
+            if (selectedObjectLabel != null) {
+                if (selectedObjectLabel.getObject() instanceof Room) {
+                    RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                    selectedObjectLabel.setColor(selectedType.getColor());
+                    this.leftPanel.repaint();
+                }
             }
         });
 
-        // "Remove Room" button
-        removeRoomButton = new JButton("Remove Room");
-        removeRoomButton.setBounds(10, 140, 200, 25);
-        addRoomPanel.add(removeRoomButton);
+        removeObjectButton = new JButton("Remove Object");
+        removeObjectButton.setBounds(10, 140, 200, 25);
+        addObjectPanel.add(removeObjectButton);
 
-        // Add listener for "Remove Room" button
-        removeRoomButton.addActionListener(e -> {
-            if (selectedRoom != null) {
-                leftPanel.remove(selectedRoom); // Remove room label from LeftPanel
+        removeObjectButton.addActionListener(e -> {
+            if (selectedObjectLabel != null) {
+                leftPanel.remove(selectedObjectLabel);
                 leftPanel.revalidate();
                 leftPanel.repaint();
-                selectedRoom = null; // Clear selection in RightPanel
+                selectedObjectLabel = null;
                 positionLabel.setText("Position: ");
                 dimensionLabel.setText("Dimensions: ");
             }
         });
 
-        // Panel for the 'Add Items' view
         addItemPanel = new JPanel();
         addItemPanel.setLayout(null);
         JLabel addItemLabel = new JLabel("Add Items Panel");
         addItemLabel.setBounds(10, 10, 300, 25);
         addItemPanel.add(addItemLabel);
 
-        // Add both views to the CardLayout
-        add(addRoomPanel, "AddRoom");
+        add(addObjectPanel, "AddObject");
         add(addItemPanel, "AddItem");
     }
 
-    // Method to switch to the 'Add Room' view
-    public void showAddRoomView() {
-        cardLayout.show(this, "AddRoom");
+    public void showAddObjectView() {
+        cardLayout.show(this, "AddObject");
     }
 
-    // Method to switch to the 'Add Items' view
     public void showAddItemView() {
         cardLayout.show(this, "AddItem");
     }
 
-    public void setSelectedRoom(RoomLabel room) {
-        selectedRoom = room;
-        update(room);
+    public void setSelectedObjectLabel(L objectLabel) {
+        selectedObjectLabel = objectLabel;
+        update(objectLabel);
     }
 
-    // Method to update the 'Add Room' panel with a room's properties
-    private void update(RoomLabel room) {
-        if (room == null) {
+    private void update(L objectLabel) {
+        if (objectLabel == null) {
             return;
         }
-        int x = room.getX();
-        int y = room.getY();
-        int width = room.getWidth();
-        int height = room.getHeight();
+        T object = objectLabel.getObject();
+        double x = object.getX();
+        double y = object.getY();
+        double width = object.getWidth();
+        double height = object.getHeight();
 
-        // Update the labels with the room's position and size
+        // Update the labels with the object's position and size
         positionLabel.setText("Position: X = " + x + ", Y = " + y);
         dimensionLabel.setText("Dimensions: Width = " + width + ", Height = " + height);
 
-        Color bgColor = room.getBackground();
-        for (RoomType type : RoomType.values()) {
-            if (bgColor.equals(type.getColor())) {
-                roomTypeDropdown.setSelectedItem(type);
-                break;
+        if (object instanceof Room) {
+            Color bgColor = objectLabel.getBackground();
+            for (RoomType type : RoomType.values()) {
+                if (bgColor.equals(type.getColor())) {
+                    roomTypeDropdown.setSelectedItem(type);
+                    break;
+                }
             }
+        } else {
+            roomTypeDropdown.setEnabled(false);
         }
     }
 }

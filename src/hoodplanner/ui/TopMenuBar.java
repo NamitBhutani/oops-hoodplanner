@@ -7,13 +7,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import hoodplanner.models.FloorObject;
 
 public class TopMenuBar extends JMenuBar {
 
     private final List<JMenuItem> menuItems = new ArrayList<>();
-    private final RightPanel rightPanel;
+    private final RightPanel<? extends FloorObject, ? extends ObjectLabel<? extends FloorObject>> rightPanel;
 
-    public TopMenuBar(RightPanel rightPanel) {
+    public TopMenuBar(RightPanel<? extends FloorObject, ? extends ObjectLabel<? extends FloorObject>> rightPanel) {
         this.rightPanel = rightPanel;
 
         JMenu fileMenu = new JMenu("File");
@@ -35,7 +36,7 @@ public class TopMenuBar extends JMenuBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Add Room clicked");
-                rightPanel.showAddRoomView();
+                rightPanel.showAddObjectView();
             }
         });
 
@@ -43,6 +44,7 @@ public class TopMenuBar extends JMenuBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Add Item clicked");
+                // For now, we just show the Add Items view
                 rightPanel.showAddItemView();
             }
         });

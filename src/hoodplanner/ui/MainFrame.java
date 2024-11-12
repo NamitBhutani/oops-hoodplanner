@@ -6,11 +6,9 @@ import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
-import javax.swing.*;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
     private final RoomController roomController;
@@ -52,6 +50,8 @@ public class MainFrame extends JFrame {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 try {
                     FloorPlan loadedFloorPlan = FloorPlan.loadFromFile(fileChooser.getSelectedFile().getPath());
+                    System.out.println(loadedFloorPlan.name);
+                    
                     loadFloorPlan(loadedFloorPlan);
                     leftPanel.revalidate();
                     leftPanel.repaint();
@@ -70,6 +70,7 @@ public class MainFrame extends JFrame {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 try {
                     floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
+                    setTitle(floorPlan.displayName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error",
@@ -82,6 +83,7 @@ public class MainFrame extends JFrame {
         splitPane.setLeftComponent(leftPanel);
         splitPane.setRightComponent(rightPanel);
 
+        setTitle(floorPlan.displayName());
         getContentPane().add(splitPane);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -91,10 +93,9 @@ public class MainFrame extends JFrame {
     public void loadFloorPlan(FloorPlan floorPlan) {
         roomController.setFloorPlan(floorPlan);
         leftPanel.removeAll();
-
+        setTitle(floorPlan.displayName());
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {
-            if (floorObject instanceof Room) {
-                Room room = (Room) floorObject;
+            if (floorObject instanceof Room room) {
                 RoomLabel roomLabel = new RoomLabel(room, roomController);
                 roomController.createObjectLabel(room, roomLabel, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
             } else if (floorObject instanceof Furniture) {

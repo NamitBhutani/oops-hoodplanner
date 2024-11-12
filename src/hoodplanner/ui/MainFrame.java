@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
     private final RightPanel<Room, RoomLabel> rightPanel;
     private FloorPlan floorPlan;
 
+    @SuppressWarnings("CallToPrintStackTrace")
     public MainFrame(List<FloorObjectController<?, ?>> controllers, FloorPlan floorPlan) {
         this.floorPlan = floorPlan;
         this.roomController = new RoomController(floorPlan);
@@ -105,7 +106,7 @@ public class MainFrame extends JFrame {
     public void loadFloorPlan(FloorPlan floorPlan) {
         roomController.setFloorPlan(floorPlan);
         this.floorPlan = floorPlan;
-        leftPanel.removeAll();
+        leftPanel.reset();
         setTitle(floorPlan.displayName());
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {
             if (floorObject instanceof Room room) {

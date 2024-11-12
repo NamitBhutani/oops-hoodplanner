@@ -13,4 +13,15 @@ public class LeftPanel extends JPanel {
         add(gridOverlay);
         setBackground(Color.DARK_GRAY);
     }
+
+    public void reset() {
+        removeAll();
+
+        // Add the gridOverlay on top of the leftPanel (grid will appear above rooms)
+        JPanel gridOverlay = new GridOverlayPanel();
+        add(gridOverlay);
+
+        revalidate();
+        repaint();
+    }
 }

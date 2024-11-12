@@ -1,6 +1,8 @@
 package hoodplanner.models;
 
-public class FloorObject {
+import java.io.Serializable;
+
+public class FloorObject implements Serializable {
     private double length;
     private double width;
     private double x;

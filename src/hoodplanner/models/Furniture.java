@@ -2,13 +2,13 @@ package hoodplanner.models;
 
 public class Furniture extends FloorObject {
     private String name;
-    private String pngFIleString;
+    private String pngFileString;
     private double rotation;
 
     public Furniture(double length, double width, double x, double y, String name, String pngFIleString) {
         super(length, width, x, y);
         this.name = name;
-        this.pngFIleString = pngFIleString;
+        this.pngFileString = pngFileString;
         this.rotation = 0.0;
     }
 

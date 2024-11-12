@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
     private final RoomController roomController;
     private final LeftPanel leftPanel;
     private final RightPanel<Room, RoomLabel> rightPanel;
-    private final FloorPlan floorPlan;
+    private FloorPlan floorPlan;
 
     public MainFrame(List<FloorObjectController<?, ?>> controllers, FloorPlan floorPlan) {
         this.floorPlan = floorPlan;
@@ -22,9 +22,6 @@ public class MainFrame extends JFrame {
         this.leftPanel = new LeftPanel();
         this.rightPanel = new RightPanel<>(leftPanel, roomController);
 
-        LeftPanel leftPanel = new LeftPanel();
-
-        RightPanel<Room, RoomLabel> rightPanel = new RightPanel<>(leftPanel, roomController);
         TopMenuBar menuBar = new TopMenuBar(rightPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -63,14 +60,29 @@ public class MainFrame extends JFrame {
             }
         });
 
-        menuBar.getItem("Save").addActionListener(e -> {
+        menuBar.getItem("Save As").addActionListener(e -> {
 
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showSaveDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 try {
-                    floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
-                    setTitle(floorPlan.displayName());
+                    this.floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
+                    setTitle(this.floorPlan.displayName());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        menuBar.getItem("Save").addActionListener(e -> {
+            if (this.floorPlan.saveFilePath == null) {
+                menuBar.getItem("Save As").doClick();
+            } else {
+                try {
+                    this.floorPlan.saveToFile(this.floorPlan.saveFilePath);
+                    setTitle(this.floorPlan.displayName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error",
@@ -92,6 +104,7 @@ public class MainFrame extends JFrame {
 
     public void loadFloorPlan(FloorPlan floorPlan) {
         roomController.setFloorPlan(floorPlan);
+        this.floorPlan = floorPlan;
         leftPanel.removeAll();
         setTitle(floorPlan.displayName());
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {

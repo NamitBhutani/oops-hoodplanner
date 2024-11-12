@@ -1,11 +1,11 @@
 package hoodplanner.ui;
 
+import hoodplanner.models.FloorObject;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import hoodplanner.models.FloorObject;
 
 public class TopMenuBar extends JMenuBar {
 
@@ -26,16 +26,19 @@ public class TopMenuBar extends JMenuBar {
         JMenuItem addRoomItem = new JMenuItem("Add Room");
         JMenuItem addItemItem = new JMenuItem("Add Items");
         JMenuItem saveItem = new JMenuItem("Save");
+        JMenuItem saveAsItem = new JMenuItem("Save As");
         JMenuItem loadItem = new JMenuItem("Load");
 
         addMenu.add(addRoomItem);
         addMenu.add(addItemItem);
         fileMenu.add(saveItem);
+        fileMenu.add(saveAsItem);
         fileMenu.add(loadItem);
 
         menuItems.add(addRoomItem);
         menuItems.add(addItemItem);
         menuItems.add(saveItem);
+        menuItems.add(saveAsItem);
         menuItems.add(loadItem);
 
         // Action Listeners

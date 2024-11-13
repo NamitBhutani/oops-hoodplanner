@@ -48,9 +48,22 @@ public class AddRoomPopup {
         Room[] roomArray = rooms.toArray(Room[]::new);
         JComboBox<Room> referenceRoomDropdown = new JComboBox<>(roomArray);
 
-        JComboBox<String> positionDropdown = new JComboBox<>(new String[] {"North", "South", "East", "West", "Center"});
+        JComboBox<String> positionDropdown = new JComboBox<>(new String[] {"North", "South", "East", "West"});
         JComboBox<String> alignmentDropdown = new JComboBox<>(new String[] {"Left", "Center", "Right"}); // Adjust for NSEW
         
+        positionDropdown.addActionListener(e -> {
+            if (positionDropdown.getSelectedItem().equals("North") || positionDropdown.getSelectedItem().equals("South")) {
+                alignmentDropdown.removeAllItems();
+                alignmentDropdown.addItem("Left");
+                alignmentDropdown.addItem("Center");
+                alignmentDropdown.addItem("Right");
+            } else {
+                alignmentDropdown.removeAllItems();
+                alignmentDropdown.addItem("Top");
+                alignmentDropdown.addItem("Middle");
+                alignmentDropdown.addItem("Bottom");
+            }
+        });
 
         moreDetailsPanel.add(new JLabel("Reference Room:"));
         moreDetailsPanel.add(referenceRoomDropdown);
@@ -77,7 +90,11 @@ public class AddRoomPopup {
             String alignment = (String) alignmentDropdown.getSelectedItem();
             
             // Call addRoom method with inputs
-            roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel);
+            if (moreDetailsPanel.isVisible()) {
+                roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel, referenceRoom, position, alignment);
+            } else {
+                roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel);
+            }
             
             leftPanel.revalidate();
             leftPanel.repaint();

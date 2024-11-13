@@ -29,4 +29,9 @@ public class Room extends FloorObject {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return name + (type != null ? " (" + type.toString() + ")" : "");
+    }
 }

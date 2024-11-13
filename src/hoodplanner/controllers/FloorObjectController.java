@@ -2,8 +2,8 @@ package hoodplanner.controllers;
 
 import hoodplanner.models.FloorObject;
 import hoodplanner.ui.LeftPanel;
-import hoodplanner.ui.RightPanel;
 import hoodplanner.ui.ObjectLabel;
+import hoodplanner.ui.RightPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -14,10 +14,6 @@ public abstract class FloorObjectController<T extends FloorObject, L extends Obj
 
     public void createObjectLabel(T object, L label, LeftPanel leftPanel, RightPanel<T, L> rightPanel) {
         objectLabels.add(label);
-        leftPanel.add(label);
-        leftPanel.revalidate();
-        leftPanel.repaint();
-
         label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -29,6 +25,10 @@ public abstract class FloorObjectController<T extends FloorObject, L extends Obj
                 rightPanel.setSelectedObjectLabel(label);
             }
         });
+        
+        leftPanel.add(label);
+        leftPanel.revalidate();
+        leftPanel.repaint();
     }
 
     public void deleteObjectLabel(L label, LeftPanel leftPanel) {
@@ -58,5 +58,9 @@ public abstract class FloorObjectController<T extends FloorObject, L extends Obj
             }
         }
         return null;
+    }
+
+    public void clearObjectLabels() {
+        objectLabels.clear();
     }
 }

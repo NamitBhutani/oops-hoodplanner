@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.*;
 
 public class MainFrame extends JFrame {
-    private final RoomController roomController;
+    private RoomController roomController;
     private final LeftPanel leftPanel;
     private final RightPanel<Room, RoomLabel> rightPanel;
     private FloorPlan floorPlan;
@@ -104,9 +104,10 @@ public class MainFrame extends JFrame {
     }
 
     public void loadFloorPlan(FloorPlan floorPlan) {
-        roomController.setFloorPlan(floorPlan);
         this.floorPlan = floorPlan;
         leftPanel.reset();
+        roomController = new RoomController(floorPlan);
+        
         setTitle(floorPlan.displayName());
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {
             if (floorObject instanceof Room room) {

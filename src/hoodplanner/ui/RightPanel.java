@@ -1,17 +1,15 @@
 package hoodplanner.ui;
 
+import hoodplanner.controllers.RoomController;
+import hoodplanner.models.FloorObject;
+import hoodplanner.models.Room;
+import hoodplanner.models.RoomType;
 import java.awt.CardLayout;
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import hoodplanner.controllers.FloorObjectController;
-import hoodplanner.controllers.RoomController;
-import hoodplanner.models.FloorObject;
-import hoodplanner.models.RoomType;
-import hoodplanner.models.Room;
 
 public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends JPanel {
 

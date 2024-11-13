@@ -1,14 +1,13 @@
 package hoodplanner.ui;
 
+import hoodplanner.controllers.RoomController;
 import hoodplanner.models.Room;
-
 import java.awt.Color;
 import java.awt.event.MouseEvent;
-import hoodplanner.controllers.RoomController;
 
 public class RoomLabel extends ObjectLabel<Room> {
 
-    private RoomController roomController;
+    private final RoomController roomController;
 
     public RoomLabel(Room room, RoomController roomController) {
         super(room);

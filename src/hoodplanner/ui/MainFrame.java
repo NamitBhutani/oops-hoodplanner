@@ -30,8 +30,8 @@ public class MainFrame extends JFrame {
         // Loop through each controller and add objects to the left panel
         for (FloorObjectController<?, ?> controller : controllers) {
             for (Object label : controller.getObjectLabels()) {
-                if (label instanceof JComponent) {
-                    leftPanel.add((JComponent) label);
+                if (label instanceof JComponent jComponent) {
+                    leftPanel.add(jComponent);
                 }
             }
         }

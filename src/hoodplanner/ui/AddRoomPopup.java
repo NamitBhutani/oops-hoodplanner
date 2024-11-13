@@ -16,8 +16,8 @@ public class AddRoomPopup {
 
     public static void showAddRoomDialog(RoomController roomController, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
         JDialog dialog = new JDialog((Frame) null, "Add Room", true);
-        dialog.setSize(300, 400);
-        dialog.setLayout(new BorderLayout());
+        dialog.setSize(600, 400);
+        dialog.setLayout(new BorderLayout(10, 10));
 
         // Main panel for room details
         JPanel mainPanel = new JPanel(new GridLayout(0, 2, 5, 5));
@@ -31,6 +31,14 @@ public class AddRoomPopup {
         mainPanel.add(new JLabel("Room Type:"));
         mainPanel.add(typeField);
 
+        JTextField widthField = new JTextField("200");
+        JTextField heightField = new JTextField("200");
+        mainPanel.add(new JLabel("Width:"));
+        mainPanel.add(widthField);
+        mainPanel.add(new JLabel("Height:"));
+        mainPanel.add(heightField);
+
+
         // More Details collapsible section
         JPanel moreDetailsPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         moreDetailsPanel.setVisible(false);
@@ -43,8 +51,6 @@ public class AddRoomPopup {
         JComboBox<String> positionDropdown = new JComboBox<>(new String[] {"North", "South", "East", "West", "Center"});
         JComboBox<String> alignmentDropdown = new JComboBox<>(new String[] {"Left", "Center", "Right"}); // Adjust for NSEW
         
-        JTextField widthField = new JTextField("200");
-        JTextField heightField = new JTextField("200");
 
         moreDetailsPanel.add(new JLabel("Reference Room:"));
         moreDetailsPanel.add(referenceRoomDropdown);
@@ -52,13 +58,9 @@ public class AddRoomPopup {
         moreDetailsPanel.add(positionDropdown);
         moreDetailsPanel.add(new JLabel("Alignment:"));
         moreDetailsPanel.add(alignmentDropdown);
-        moreDetailsPanel.add(new JLabel("Width:"));
-        moreDetailsPanel.add(widthField);
-        moreDetailsPanel.add(new JLabel("Height:"));
-        moreDetailsPanel.add(heightField);
 
         // Button to toggle More Details panel
-        JButton moreDetailsButton = new JButton("More Details");
+        JButton moreDetailsButton = new JButton("Relative Positioning");
         moreDetailsButton.addActionListener(e -> moreDetailsPanel.setVisible(!moreDetailsPanel.isVisible()));
         moreDetailsButton.setVisible(true);
 
@@ -84,7 +86,7 @@ public class AddRoomPopup {
 
         // Assemble dialog layout
         dialog.add(mainPanel, BorderLayout.NORTH);
-        dialog.add(moreDetailsButton, BorderLayout.EAST);
+        dialog.add(moreDetailsButton, BorderLayout.WEST);
         dialog.add(moreDetailsPanel, BorderLayout.CENTER);
         dialog.add(submitButton, BorderLayout.SOUTH);
 

@@ -21,25 +21,25 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         this.floorPlan = floorPlan;
     }
 
-    public void addRoom(String name, RoomType type, double width, double height, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
+    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
         // Row major order placement of rooms
         double x = 0;
         double y = 0;
         boolean placed = false;
         double spacing = 25;  // Optional gap between rooms
-    
+
         // Loop until we find a non-overlapping position for the new room
         while (!placed) {
             boolean hasSpace = true;
-    
+
             // Check if the current (x, y) position overlaps with any existing FloorObjects
             for (FloorObject existing : floorPlan.getFloorObjects()) {
-                if (isOverlapping(existing, x, y, width, height, spacing)) {
+                if (isOverlapping(existing, x, y, width, length, spacing)) {
                     hasSpace = false;
                     break;
                 }
             }
-    
+
             if (hasSpace) {
                 // Position found, exit loop
                 placed = true;
@@ -48,75 +48,84 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
                 x += width + spacing;
                 if (x + width > floorPlan.width) {
                     x = 0;
-                    y += height + spacing;
+                    y += length + spacing;
                 }
             }
         }
-    
+
         // Create the room with the found coordinates
-        
-        addRoomAt(name, type, width, height, x, y, leftPanel, rightPanel);
+        addRoomAt(name, type, width, length, x, y, leftPanel, rightPanel);
     }
 
-    public void addRoom(String name, RoomType type, double width, double height, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
+    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
         double x = referenceRoom.getX();
         double y = referenceRoom.getY();
+
+        // NOTE: The reference room's width and length are swapped, IDK why but it works ;-;
+
+        // System.out.println("Reference room: " + referenceRoom.getName());
+        // System.out.println("REFERENCE ROOM X: " + referenceRoom.getX());
+        // System.out.println("REFERENCE ROOM Y: " + referenceRoom.getY());
+        // System.out.println("REFERENCE ROOM WIDTH: " + referenceRoom.getWidth());
+        // System.out.println("REFERENCE ROOM LENGTH: " + referenceRoom.getLength());
         double spacing = 0;  // Optional gap between rooms
-    
+
         // Adjust x and y based on the specified position and alignment
         switch (position.toLowerCase()) {
-            case "north":
-                y -= height + spacing;
-                if ("left".equalsIgnoreCase(alignment)) {
-                    x = referenceRoom.getX();
-                } else if ("right".equalsIgnoreCase(alignment)) {
-                    x = referenceRoom.getX() + referenceRoom.getWidth() - width;
+            case "north" -> {
+                y -= length + spacing;
+                switch (alignment.toLowerCase()) {
+                    case "left" -> x = referenceRoom.getX();
+                    case "right" -> x = referenceRoom.getX() + referenceRoom.getLength() - width;
+                    case "center", "middle" -> x = referenceRoom.getX() + (referenceRoom.getLength() - width) / 2;
+                    default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
                 }
-                break;
-    
-            case "south":
-                y += referenceRoom.getHeight() + spacing;
-                if ("left".equalsIgnoreCase(alignment)) {
-                    x = referenceRoom.getX();
-                } else if ("right".equalsIgnoreCase(alignment)) {
-                    x = referenceRoom.getX() + referenceRoom.getWidth() - width;
+            }
+
+            case "south" -> {
+                y += referenceRoom.getWidth() + spacing;
+                switch (alignment.toLowerCase()) {
+                    case "left" -> x = referenceRoom.getX();
+                    case "right" -> x = referenceRoom.getX() + referenceRoom.getLength() - width;
+                    case "center", "middle" -> x = referenceRoom.getX() + (referenceRoom.getLength() - width) / 2;
+                    default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
                 }
-                break;
-    
-            case "east":
-                x += referenceRoom.getWidth() + spacing;
-                if ("top".equalsIgnoreCase(alignment)) {
-                    y = referenceRoom.getY();
-                } else if ("bottom".equalsIgnoreCase(alignment)) {
-                    y = referenceRoom.getY() + referenceRoom.getHeight() - height;
+            }
+
+            case "east" -> {
+                x += referenceRoom.getLength() + spacing;
+                switch (alignment.toLowerCase()) {
+                    case "top" -> y = referenceRoom.getY();
+                    case "bottom" -> y = referenceRoom.getY() + referenceRoom.getWidth() - length;
+                    case "middle", "center" -> y = referenceRoom.getY() + (referenceRoom.getWidth() - length) / 2;
+                    default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
                 }
-                break;
-    
-            case "west":
+            }
+
+            case "west" -> {
                 x -= width + spacing;
-                if ("top".equalsIgnoreCase(alignment)) {
-                    y = referenceRoom.getY();
-                } else if ("bottom".equalsIgnoreCase(alignment)) {
-                    y = referenceRoom.getY() + referenceRoom.getHeight() - height;
+                switch (alignment.toLowerCase()) {
+                    case "top" -> y = referenceRoom.getY();
+                    case "bottom" -> y = referenceRoom.getY() + referenceRoom.getWidth() - length;
+                    case "middle", "center" -> y = referenceRoom.getY() + (referenceRoom.getWidth() - length) / 2;
+                    default -> throw new IllegalArgumentException("Invalid alignment: " + alignment);
                 }
-                break;    
-            default:
-                throw new IllegalArgumentException("Invalid position: " + position);
+            }
+            default -> throw new IllegalArgumentException("Invalid position: " + position);
         }
-    
+
         // Ensure the new position does not overlap with existing FloorObjects
         for (FloorObject existing : floorPlan.getFloorObjects()) {
-            if (isOverlapping(existing, x, y, width, height, spacing)) {
+            if (isOverlapping(existing, x, y, width, length, spacing)) {
                 throw new IllegalArgumentException("The specified position results in an overlap with another room.");
             }
         }
-    
-        // Create and add the room at the calculated position
-        addRoomAt(name, type, width, height, x, y, leftPanel, rightPanel);
-    }
-    
 
-    private void addRoomAt(String name, RoomType type, double width, double height, double x, double y, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
+        // Create and add the room at the calculated position
+        addRoomAt(name, type, width, length, x, y, leftPanel, rightPanel);
+    }
+
+    private void addRoomAt(String name, RoomType type, double width, double length, double x, double y, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
         int count = 2;
         String originalName = name;
         String newName = name;
@@ -128,15 +137,13 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         }
         name = newName;
 
-        Room room = new Room(name, width, height, x, y);
+        Room room = new Room(name, width, length, x, y);
         room.setType(type);
         floorPlan.addFloorObject(room);
 
         RoomLabel roomLabel = new RoomLabel(room, this);
         createObjectLabel(room, roomLabel, leftPanel, rightPanel);
     }                                   
-
-
 
     public List<Room> getRooms() {
         return floorPlan.getFloorObjects().stream()
@@ -162,11 +169,12 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
     }
 
     // Helper method to check overlap with a spacing buffer
-    private boolean isOverlapping(FloorObject existing, double x, double y, double width, double height, double spacing) {
+    private boolean isOverlapping(FloorObject existing, double x, double y, double width, double length, double spacing) {
         double buffer = spacing / 2.0;
         return !(x + width + buffer <= existing.getX() || 
                 x >= existing.getX() + existing.getWidth() + buffer ||
-                y + height + buffer <= existing.getY() ||
-                y >= existing.getY() + existing.getHeight() + buffer);
+                y + length + buffer <= existing.getY() ||
+                y >= existing.getY() + existing.getLength() + buffer);
     }
 }
+

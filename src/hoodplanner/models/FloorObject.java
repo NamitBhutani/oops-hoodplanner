@@ -27,10 +27,6 @@ public class FloorObject implements Serializable {
         return width;
     }
 
-    public double getHeight() {
-        return width;
-    }
-
     public void setWidth(double width) {
         this.width = width;
     }

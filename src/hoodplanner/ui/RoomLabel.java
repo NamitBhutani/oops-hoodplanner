@@ -12,7 +12,11 @@ public class RoomLabel extends ObjectLabel<Room> {
     public RoomLabel(Room room, RoomController roomController) {
         super(room);
         this.roomController = roomController;
-        setColor(Color.WHITE);
+        if (room.getType() != null) {
+            setColor(room.getType().getColor());
+        } else {
+            setColor(Color.WHITE);
+        }
     }
 
     @Override

@@ -50,8 +50,9 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
         roomTypeDropdown.addActionListener(e -> {
             if (selectedObjectLabel != null) {
-                if (selectedObjectLabel.getObject() instanceof Room) {
+                if (selectedObjectLabel.getObject() instanceof Room room) {
                     RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                    room.setType(selectedType);
                     selectedObjectLabel.setColor(selectedType.getColor());
                     this.leftPanel.repaint();
                 }

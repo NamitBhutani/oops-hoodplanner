@@ -90,15 +90,20 @@ public class AddRoomPopup {
             String alignment = (String) alignmentDropdown.getSelectedItem();
             
             // Call addRoom method with inputs
-            if (moreDetailsPanel.isVisible()) {
-                roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel, referenceRoom, position, alignment);
-            } else {
-                roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel);
+            try {
+                if (moreDetailsPanel.isVisible()) {
+                    roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel, referenceRoom, position, alignment);
+                } else {
+                    roomController.addRoom(roomName, roomType, width, height, leftPanel, rightPanel);
+                }
+                leftPanel.revalidate();
+                leftPanel.repaint();
+                dialog.dispose();
+                
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(dialog, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            
-            leftPanel.revalidate();
-            leftPanel.repaint();
-            dialog.dispose();
+
         });
 
         // Assemble dialog layout

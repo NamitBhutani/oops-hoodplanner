@@ -37,9 +37,10 @@ public class MainFrame extends JFrame {
         }
 
         menuBar.getItem("Add Room").addActionListener(e -> {
-            roomController.addRoom(200, 200, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
-            leftPanel.revalidate();
-            leftPanel.repaint();
+            AddRoomPopup.showAddRoomDialog(roomController, leftPanel, rightPanel);
+            // roomController.addRoom(200, 200, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
+            // leftPanel.revalidate();
+            // leftPanel.repaint();
         });
         menuBar.getItem("Load").addActionListener(e -> {
 

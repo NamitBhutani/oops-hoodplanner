@@ -3,9 +3,12 @@ package hoodplanner.controllers;
 import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Room;
+import hoodplanner.models.RoomType;
 import hoodplanner.ui.LeftPanel;
 import hoodplanner.ui.RightPanel;
 import hoodplanner.ui.RoomLabel;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RoomController extends FloorObjectController<Room, RoomLabel> {
     private FloorPlan floorPlan;
@@ -18,7 +21,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         this.floorPlan = floorPlan;
     }
 
-    public void addRoom(double width, double height, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
+    public void addRoom(String name, RoomType type, double width, double height, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
         
         double x = 0;
         double y = 0;
@@ -51,11 +54,32 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         }
     
         // Create the room with the found coordinates
-        Room room = new Room(width, height, x, y);
+        
+        // Check if the room name already exists
+        int count = 2;
+        String originalName = name;
+        String newName = name;
+        for (Room room : getRooms()) {
+            if (room.getName().equals(newName)) {
+                newName = originalName + " " + count;
+                count++;
+            }
+        }
+        name = newName;
+
+        Room room = new Room(name, width, height, x, y);
+        room.setType(type);
         floorPlan.addFloorObject(room);
 
         RoomLabel roomLabel = new RoomLabel(room, this);
         createObjectLabel(room, roomLabel, leftPanel, rightPanel);
+    }
+
+    public List<Room> getRooms() {
+        return floorPlan.getFloorObjects().stream()
+                .filter(obj -> obj instanceof Room)
+                .map(obj -> (Room) obj)
+                .collect(Collectors.toList());
     }
 
     public void deleteRoom(Room room, LeftPanel leftPanel) {

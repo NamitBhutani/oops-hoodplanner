@@ -1,6 +1,8 @@
 package hoodplanner.models;
 
-public class Window {
+import java.io.Serializable;
+
+public class Window implements Serializable {
     public int length;
     public int distFromStart;
 

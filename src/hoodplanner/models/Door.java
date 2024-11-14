@@ -1,6 +1,8 @@
 package hoodplanner.models;
 
-public class Door {
+import java.io.Serializable;
+
+public class Door implements Serializable {
     public int length;
     public int distFromStart;
 

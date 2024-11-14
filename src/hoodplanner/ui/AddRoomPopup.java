@@ -106,7 +106,6 @@ public class AddRoomPopup {
 
         });
 
-        // Assemble dialog layout
         dialog.add(mainPanel, BorderLayout.NORTH);
         dialog.add(moreDetailsButton, BorderLayout.WEST);
         dialog.add(moreDetailsPanel, BorderLayout.CENTER);

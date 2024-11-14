@@ -1,18 +1,17 @@
 package hoodplanner.ui;
 
 import hoodplanner.models.FloorObject;
-
-import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JLabel;
 
 public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
-    private T object;
+    private final T object;
     Point initialClick;
     private boolean resizing = false;
     private Color color = new Color(155, 40, 40, 255); // Default color
@@ -120,12 +119,14 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
     public abstract void move(MouseEvent e);
 
+    @Override
     public void setLocation(int x, int y) {
         super.setLocation(x, y);
         object.setX(x);
         object.setY(y);
     }
 
+    @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
         object.setLength(width);

@@ -176,5 +176,45 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
                 y + length + buffer <= existing.getY() ||
                 y >= existing.getY() + existing.getLength() + buffer);
     }
+
+
+    // public boolean hasNeighbor(FloorObject object, String direction) {
+    //     double x = object.getX();
+    //     double y = object.getY();
+    //     double width = object.getWidth();
+    //     double length = object.getLength();
+
+    //     for (FloorObject existing : floorPlan.getFloorObjects()) {
+    //         if (existing.equals(object)) {
+    //             continue;
+    //         }
+
+    //         double buffer = 0;
+    //         switch (direction.toLowerCase()) {
+    //             case "north" -> {
+    //                 if (x + width + buffer > existing.getX() && x < existing.getX() + existing.getWidth() + buffer && y - buffer < existing.getY() + existing.getLength()) {
+    //                     return true;
+    //                 }
+    //             }
+    //             case "south" -> {
+    //                 if (x + width + buffer > existing.getX() && x < existing.getX() + existing.getWidth() + buffer && y + length + buffer > existing.getY()) {
+    //                     return true;
+    //                 }
+    //             }
+    //             case "east" -> {
+    //                 if (y + length + buffer > existing.getY() && y < existing.getY() + existing.getLength() + buffer && x + width + buffer > existing.getX()) {
+    //                     return true;
+    //                 }
+    //             }
+    //             case "west" -> {
+    //                 if (y + length + buffer > existing.getY() && y < existing.getY() + existing.getLength() + buffer && x - buffer < existing.getX() + existing.getWidth()) {
+    //                     return true;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return false;
+    // }
 }
 

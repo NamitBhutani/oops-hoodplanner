@@ -1,5 +1,9 @@
 package hoodplanner.ui;
 
+import hoodplanner.controllers.RoomController;
+import hoodplanner.models.FloorObject;
+import hoodplanner.models.Room;
+import hoodplanner.models.RoomType;
 import java.awt.CardLayout;
 import java.awt.Color;
 import javax.swing.JButton;
@@ -7,16 +11,12 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import hoodplanner.controllers.FloorObjectController;
-import hoodplanner.controllers.RoomController;
-import hoodplanner.models.FloorObject;
-import hoodplanner.models.RoomType;
-import hoodplanner.models.Room;
-
 public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends JPanel {
 
     private L selectedObjectLabel;
     private final LeftPanel leftPanel;
+
+    private final JLabel objectName;
     private final JLabel positionLabel;
     private final JLabel dimensionLabel;
     private final JComboBox<RoomType> roomTypeDropdown;
@@ -34,26 +34,33 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
         addObjectPanel = new JPanel();
         addObjectPanel.setLayout(null);
-        positionLabel = new JLabel("Position: ");
-        positionLabel.setBounds(10, 10, 300, 25);
-        dimensionLabel = new JLabel("Dimensions: ");
-        dimensionLabel.setBounds(10, 40, 300, 25);
 
+        objectName = new JLabel("Details Panel");
+        objectName.setBounds(10, 10, 300, 25);
+        objectName.setFont(objectName.getFont().deriveFont(16.0f));
+
+        positionLabel = new JLabel("Position: ");
+        positionLabel.setBounds(10, 40, 300, 25);
+        dimensionLabel = new JLabel("Dimensions: ");
+        dimensionLabel.setBounds(10, 70, 300, 25);
+
+        addObjectPanel.add(objectName);
         addObjectPanel.add(positionLabel);
         addObjectPanel.add(dimensionLabel);
 
         roomTypeDropdown = new JComboBox<>(RoomType.values());
         JLabel typeLabel = new JLabel("Select Room Type:");
-        typeLabel.setBounds(10, 70, 300, 25);
-        roomTypeDropdown.setBounds(10, 100, 200, 25);
+        typeLabel.setBounds(10, 95, 300, 25);
+        roomTypeDropdown.setBounds(10, 120, 200, 25);
 
         addObjectPanel.add(typeLabel);
         addObjectPanel.add(roomTypeDropdown);
 
         roomTypeDropdown.addActionListener(e -> {
             if (selectedObjectLabel != null) {
-                if (selectedObjectLabel.getObject() instanceof Room) {
+                if (selectedObjectLabel.getObject() instanceof Room room) {
                     RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                    room.setType(selectedType);
                     selectedObjectLabel.setColor(selectedType.getColor());
                     this.leftPanel.repaint();
                 }
@@ -61,7 +68,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         });
 
         removeObjectButton = new JButton("Remove Room");
-        removeObjectButton.setBounds(10, 140, 200, 25);
+        removeObjectButton.setBounds(10, 160, 200, 25);
         addObjectPanel.add(removeObjectButton);
 
         removeObjectButton.addActionListener(e -> {
@@ -105,13 +112,14 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         double x = object.getX();
         double y = object.getY();
         double width = object.getWidth();
-        double height = object.getHeight();
+        double length = object.getLength();
 
         // Update the labels with the object's position and size
         positionLabel.setText("Position: X = " + x + ", Y = " + y);
-        dimensionLabel.setText("Dimensions: Width = " + width + ", Height = " + height);
+        dimensionLabel.setText("Dimensions: Width = " + width + ", Length = " + length);
 
-        if (object instanceof Room) {
+        if (object instanceof Room room) {
+            objectName.setText("Details Panel: " + room.getName());
             Color bgColor = objectLabel.getBackground();
             for (RoomType type : RoomType.values()) {
                 if (bgColor.equals(type.getColor())) {

@@ -7,6 +7,8 @@ import java.util.List;
 public class FloorPlan implements Serializable {
     public String name;
     public String saveFilePath;
+    public int width = 1000;
+    public int height = 1200;
     private final List<FloorObject> floorObjects;
 
     public FloorPlan(String name) {

@@ -5,7 +5,7 @@ public class Furniture extends FloorObject {
     private String pngFileString;
     private double rotation;
 
-    public Furniture(double length, double width, double x, double y, String name, String pngFIleString) {
+    public Furniture(double length, double width, double x, double y, String name, String pngFileString) {
         super(length, width, x, y);
         this.name = name;
         this.pngFileString = pngFileString;

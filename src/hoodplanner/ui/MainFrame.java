@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.*;
 
 public class MainFrame extends JFrame {
-    private final RoomController roomController;
+    private RoomController roomController;
     private final LeftPanel leftPanel;
     private final RightPanel<Room, RoomLabel> rightPanel;
     private FloorPlan floorPlan;
@@ -30,16 +30,17 @@ public class MainFrame extends JFrame {
         // Loop through each controller and add objects to the left panel
         for (FloorObjectController<?, ?> controller : controllers) {
             for (Object label : controller.getObjectLabels()) {
-                if (label instanceof JComponent) {
-                    leftPanel.add((JComponent) label);
+                if (label instanceof JComponent jComponent) {
+                    leftPanel.add(jComponent);
                 }
             }
         }
 
         menuBar.getItem("Add Room").addActionListener(e -> {
-            roomController.addRoom(200, 200, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
-            leftPanel.revalidate();
-            leftPanel.repaint();
+            AddRoomPopup.showAddRoomDialog(roomController, leftPanel, rightPanel);
+            // roomController.addRoom(200, 200, leftPanel, (RightPanel<Room, RoomLabel>) rightPanel);
+            // leftPanel.revalidate();
+            // leftPanel.repaint();
         });
         menuBar.getItem("Load").addActionListener(e -> {
 
@@ -104,9 +105,10 @@ public class MainFrame extends JFrame {
     }
 
     public void loadFloorPlan(FloorPlan floorPlan) {
-        roomController.setFloorPlan(floorPlan);
         this.floorPlan = floorPlan;
         leftPanel.reset();
+        roomController = new RoomController(floorPlan);
+        
         setTitle(floorPlan.displayName());
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {
             if (floorObject instanceof Room room) {

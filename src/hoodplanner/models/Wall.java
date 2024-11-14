@@ -18,10 +18,10 @@ public class Wall extends FloorObject {
         // this.doors.add(new Door(25, x, y));
         // this.windows.add(new Window(25, x, y + 50));
 
-        this.addDoor(45, 150);
+        // this.addDoor(45, 150);
         // this.addDoor(25, 100);
 
-        this.addWindow(60, 30);
+        // this.addWindow(60, 30);
     }
 
 
@@ -33,15 +33,23 @@ public class Wall extends FloorObject {
         return windows;
     }
 
-    public void addDoor(int length, int distFromStart) {
-        doors.add(new Door(length, distFromStart));
+    public void addDoor(Door door) {
+        doors.add(door);
 
         doors.sort(Comparator.comparingInt(Door::getDistanceFromStart));
     }
 
-    public void addWindow(int length, int distFromStart) {
-        windows.add(new Window(length, distFromStart));
+    public void addDoor(int length, int distFromStart) {
+        addDoor(new Door(length, distFromStart));   
+    }
+
+    public void addWindow(Window window) {
+        windows.add(window);
 
         windows.sort(Comparator.comparingInt(Window::getDistanceFromStart));
+    }
+
+    public void addWindow(int length, int distFromStart) {
+        addWindow(new Window(length, distFromStart));
     }
 }

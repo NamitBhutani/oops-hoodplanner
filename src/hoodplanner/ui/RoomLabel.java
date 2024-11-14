@@ -7,7 +7,10 @@ import hoodplanner.models.Wall;
 import hoodplanner.models.Window;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 public class RoomLabel extends ObjectLabel<Room> {
@@ -28,6 +31,95 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         // Add padding to account for wall thickness
         setBorder(new EmptyBorder(wallThickness, wallThickness, wallThickness, wallThickness));
+        // Add mouse listener for right-click detection
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    handleRightClick(e);
+                }
+            }
+        });
+    }
+
+    private void handleRightClick(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+        int width = getWidth();
+        int height = getHeight();
+        
+        Wall clickedWall = null;
+        int distanceFromStart = 0;
+        
+        // Determine which wall was clicked and calculate distance from start
+        if (y <= wallThickness) {
+            clickedWall = room.northWall;  // Top wall
+            distanceFromStart = x;  // Horizontal distance from left to right
+        } else if (y >= height - wallThickness) {
+            clickedWall = room.southWall;  // Bottom wall
+            distanceFromStart = x;  // Horizontal distance from left to right
+        } else if (x <= wallThickness) {
+            clickedWall = room.westWall;   // Left wall
+            distanceFromStart = y;  // Vertical distance from top to bottom
+        } else if (x >= width - wallThickness) {
+            clickedWall = room.eastWall;   // Right wall
+            distanceFromStart = y;  // Vertical distance from top to bottom
+        }
+
+        if (clickedWall != null) {
+            openWallOptionsDialog(clickedWall, distanceFromStart);
+        }
+    }
+
+    private void openWallOptionsDialog(Wall wall, int distanceFromStart) {
+        // Show a dialog with options to add a door or window
+        String[] options = {"Add Door", "Add Window"};
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "Select an option:",
+                "Wall Options",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (choice == 0) {
+            addDoorDialog(wall, distanceFromStart);
+        } else if (choice == 1) {
+            addWindowDialog(wall, distanceFromStart);
+        }
+    }
+
+    private void addDoorDialog(Wall wall, int distanceFromStart) {
+        // Show input dialog for door length
+        String lengthStr = JOptionPane.showInputDialog(this, "Enter door length:");
+
+        try {
+            int length = Integer.parseInt(lengthStr);
+            Door door = new Door(length, distanceFromStart);
+
+            wall.addDoor(door); // Add the door to the selected wall
+            repaint(); // Repaint to show the added door
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for length.");
+        }
+    }
+
+    private void addWindowDialog(Wall wall, int distanceFromStart) {
+        // Show input dialog for window length
+        String lengthStr = JOptionPane.showInputDialog(this, "Enter window length:");
+
+        try {
+            int length = Integer.parseInt(lengthStr);
+            Window window = new Window(length, distanceFromStart);
+
+            wall.addWindow(window); // Add the window to the selected wall
+            repaint(); // Repaint to show the added window
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for length.");
+        }
     }
 
     @Override

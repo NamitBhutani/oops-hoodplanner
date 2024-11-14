@@ -1,7 +1,10 @@
 package hoodplanner.ui;
 
 import hoodplanner.controllers.RoomController;
+import hoodplanner.models.Door;
 import hoodplanner.models.Room;
+import hoodplanner.models.Wall;
+import hoodplanner.models.Window;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -36,9 +39,6 @@ public class RoomLabel extends ObjectLabel<Room> {
         int width = getWidth();
         int height = getHeight();
         
-        // Half thickness for shared walls
-        int halfThickness = wallThickness / 2;
-
         // Check for adjacent rooms
         // boolean hasTopNeighbor = roomController.hasNeighbor(room, "north");
         // boolean hasBottomNeighbor = roomController.hasNeighbor(room, "south");
@@ -50,35 +50,71 @@ public class RoomLabel extends ObjectLabel<Room> {
         boolean hasLeftNeighbor = false;
         boolean hasRightNeighbor = false;
 
-        // Draw top wall
-        if (hasTopNeighbor) {
-            g.fillRect(0, 0, width, halfThickness); // Draw only half-thickness wall
-        } else {
-            g.fillRect(0, 0, width, wallThickness); // Draw full-thickness wall
-        }
-
-        // Draw bottom wall
-        if (hasBottomNeighbor) {
-            g.fillRect(0, height - halfThickness, width, halfThickness);
-        } else {
-            g.fillRect(0, height - wallThickness, width, wallThickness);
-        }
-
-        // Draw left wall
-        if (hasLeftNeighbor) {
-            g.fillRect(0, 0, halfThickness, height);
-        } else {
-            g.fillRect(0, 0, wallThickness, height);
-        }
-
-        // Draw right wall
-        if (hasRightNeighbor) {
-            g.fillRect(width - halfThickness, 0, halfThickness, height);
-        } else {
-            g.fillRect(width - wallThickness, 0, wallThickness, height);
-        }
+        drawWallWithDoorsAndWindows(g, room.northWall, 0, 0, width, wallThickness, hasTopNeighbor, "horizontal");
+        drawWallWithDoorsAndWindows(g, room.southWall, 0, height - wallThickness, width, wallThickness, hasBottomNeighbor, "horizontal");
+        drawWallWithDoorsAndWindows(g, room.westWall, 0, 0, height, wallThickness, hasLeftNeighbor, "vertical");
+        drawWallWithDoorsAndWindows(g, room.eastWall, width - wallThickness, 0, height, wallThickness, hasRightNeighbor, "vertical");
     }
 
+    // Helper method to draw a wall with doors and windows
+    private void drawWallWithDoorsAndWindows(Graphics g, Wall wall, int x, int y, int length, int thickness, boolean hasNeighbor, String orientation) {
+        int halfThickness = thickness / 2;
+        int actualThickness = hasNeighbor ? halfThickness : thickness;
+    
+        // Sort doors and windows by distance from start
+        int currentPos = 0;
+    
+        // Draw wall segments, skipping parts for doors
+        for (Door door : wall.getDoors()) {
+            int doorStart = door.getDistanceFromStart();
+            int doorEnd = doorStart + door.getLength();
+    
+            // Draw wall segment up to the start of the door
+            if (currentPos < doorStart) {
+                if (orientation.equals("horizontal")) {
+                    g.fillRect(x + currentPos, y, doorStart - currentPos, actualThickness);
+                } else {
+                    g.fillRect(x, y + currentPos, actualThickness, doorStart - currentPos);
+                }
+            }
+            
+            // Skip the door segment
+            currentPos = doorEnd;
+        }
+    
+        // Draw the remaining wall segment after the last door, if any
+        if (currentPos < length) {
+            if (orientation.equals("horizontal")) {
+                g.fillRect(x + currentPos, y, length - currentPos, actualThickness);
+            } else {
+                System.out.println("x: " + x + " y: " + y + " currentPos: " + currentPos + " actualThickness: " + actualThickness + " length: " + length + " currentPos: " + currentPos);
+                g.fillRect(x, y + currentPos,  actualThickness, length - currentPos);
+            }
+        }
+    
+        // Draw dashed lines for windows
+        g.setColor(Color.DARK_GRAY); // Set color for windows
+        int dashLength = 5;          // Length of each dash
+        int spaceLength = 3;         // Space between dashes
+    
+        for (Window window : wall.getWindows()) {
+            int windowStart = window.getDistanceFromStart();
+            int windowEnd = windowStart + window.getLength();
+    
+            // Draw dashes along the window segment
+            if (orientation.equals("horizontal")) {
+                for (int i = windowStart; i < windowEnd; i += dashLength + spaceLength) {
+                    g.fillRect(x + i, y, Math.min(dashLength, windowEnd - i), actualThickness);
+                }
+            } else {
+                for (int i = windowStart; i < windowEnd; i += dashLength + spaceLength) {
+                    g.fillRect(x, y + i, actualThickness, Math.min(dashLength, windowEnd - i));
+                }
+            }
+        }
+        g.setColor(Color.WHITE); // Reset color for walls
+    }
+    
     @Override
     public void move(MouseEvent e) {
         int thisX = getLocation().x;

@@ -66,6 +66,9 @@ public class RoomLabel extends ObjectLabel<Room> {
             distanceFromStart = y;  // Vertical distance from top to bottom
         }
 
+
+        distanceFromStart = distanceFromStart / 25 * 25; // Round to nearest 25
+
         if (clickedWall != null) {
             openWallOptionsDialog(clickedWall, distanceFromStart);
         }

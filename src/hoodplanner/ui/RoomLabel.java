@@ -5,6 +5,7 @@ import hoodplanner.models.Door;
 import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Room;
+import hoodplanner.models.RoomType;
 import hoodplanner.models.Wall;
 import hoodplanner.models.Window;
 import java.awt.Color;
@@ -96,7 +97,14 @@ public class RoomLabel extends ObjectLabel<Room> {
     }
 
     private void addDoorDialog(Wall wall, int distanceFromStart) {
-        // Show input dialog for door length
+        if (room.getType() == RoomType.BATHROOM || room.getType() == RoomType.BEDROOM) {
+            Wall adjacentWall = findAdjacentWall(wall);
+            if (adjacentWall == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Doors can only be added to walls adjacent to another room's wall for bathrooms and bedrooms.");
+                return;
+            }
+        }
         String lengthStr = JOptionPane.showInputDialog(this, "Enter door length:");
 
         try {

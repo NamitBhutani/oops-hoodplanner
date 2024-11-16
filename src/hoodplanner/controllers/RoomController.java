@@ -17,16 +17,21 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         this.floorPlan = floorPlan;
     }
 
+    public FloorPlan getFloorPlan() {
+        return floorPlan;
+    }
+
     public void setFloorPlan(FloorPlan floorPlan) {
         this.floorPlan = floorPlan;
     }
 
-    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
+    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel,
+            RightPanel<Room, RoomLabel> rightPanel) {
         // Row major order placement of rooms
         double x = 0;
         double y = 0;
         boolean placed = false;
-        double spacing = 25;  // Optional gap between rooms
+        double spacing = 25; // Optional gap between rooms
 
         // Loop until we find a non-overlapping position for the new room
         while (!placed) {
@@ -57,18 +62,20 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         addRoomAt(name, type, width, length, x, y, leftPanel, rightPanel);
     }
 
-    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
+    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel,
+            RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
         double x = referenceRoom.getX();
         double y = referenceRoom.getY();
 
-        // NOTE: The reference room's width and length are swapped, IDK why but it works ;-;
+        // NOTE: The reference room's width and length are swapped, IDK why but it works
+        // ;-;
 
         // System.out.println("Reference room: " + referenceRoom.getName());
         // System.out.println("REFERENCE ROOM X: " + referenceRoom.getX());
         // System.out.println("REFERENCE ROOM Y: " + referenceRoom.getY());
         // System.out.println("REFERENCE ROOM WIDTH: " + referenceRoom.getWidth());
         // System.out.println("REFERENCE ROOM LENGTH: " + referenceRoom.getLength());
-        double spacing = 0;  // Optional gap between rooms
+        double spacing = 0; // Optional gap between rooms
 
         // Adjust x and y based on the specified position and alignment
         switch (position.toLowerCase()) {
@@ -125,7 +132,8 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         addRoomAt(name, type, width, length, x, y, leftPanel, rightPanel);
     }
 
-    private void addRoomAt(String name, RoomType type, double width, double length, double x, double y, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
+    private void addRoomAt(String name, RoomType type, double width, double length, double x, double y,
+            LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel) {
         int count = 2;
         String originalName = name;
         String newName = name;
@@ -143,7 +151,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
 
         RoomLabel roomLabel = new RoomLabel(room, this);
         createObjectLabel(room, roomLabel, leftPanel, rightPanel);
-    }                                   
+    }
 
     public List<Room> getRooms() {
         return floorPlan.getFloorObjects().stream()
@@ -169,52 +177,57 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
     }
 
     // Helper method to check overlap with a spacing buffer
-    private boolean isOverlapping(FloorObject existing, double x, double y, double width, double length, double spacing) {
+    private boolean isOverlapping(FloorObject existing, double x, double y, double width, double length,
+            double spacing) {
         double buffer = spacing / 2.0;
-        return !(x + width + buffer <= existing.getX() || 
+        return !(x + width + buffer <= existing.getX() ||
                 x >= existing.getX() + existing.getWidth() + buffer ||
                 y + length + buffer <= existing.getY() ||
                 y >= existing.getY() + existing.getLength() + buffer);
     }
 
-
     // public boolean hasNeighbor(FloorObject object, String direction) {
-    //     double x = object.getX();
-    //     double y = object.getY();
-    //     double width = object.getWidth();
-    //     double length = object.getLength();
+    // double x = object.getX();
+    // double y = object.getY();
+    // double width = object.getWidth();
+    // double length = object.getLength();
 
-    //     for (FloorObject existing : floorPlan.getFloorObjects()) {
-    //         if (existing.equals(object)) {
-    //             continue;
-    //         }
+    // for (FloorObject existing : floorPlan.getFloorObjects()) {
+    // if (existing.equals(object)) {
+    // continue;
+    // }
 
-    //         double buffer = 0;
-    //         switch (direction.toLowerCase()) {
-    //             case "north" -> {
-    //                 if (x + width + buffer > existing.getX() && x < existing.getX() + existing.getWidth() + buffer && y - buffer < existing.getY() + existing.getLength()) {
-    //                     return true;
-    //                 }
-    //             }
-    //             case "south" -> {
-    //                 if (x + width + buffer > existing.getX() && x < existing.getX() + existing.getWidth() + buffer && y + length + buffer > existing.getY()) {
-    //                     return true;
-    //                 }
-    //             }
-    //             case "east" -> {
-    //                 if (y + length + buffer > existing.getY() && y < existing.getY() + existing.getLength() + buffer && x + width + buffer > existing.getX()) {
-    //                     return true;
-    //                 }
-    //             }
-    //             case "west" -> {
-    //                 if (y + length + buffer > existing.getY() && y < existing.getY() + existing.getLength() + buffer && x - buffer < existing.getX() + existing.getWidth()) {
-    //                     return true;
-    //                 }
-    //             }
-    //         }
-    //     }
+    // double buffer = 0;
+    // switch (direction.toLowerCase()) {
+    // case "north" -> {
+    // if (x + width + buffer > existing.getX() && x < existing.getX() +
+    // existing.getWidth() + buffer && y - buffer < existing.getY() +
+    // existing.getLength()) {
+    // return true;
+    // }
+    // }
+    // case "south" -> {
+    // if (x + width + buffer > existing.getX() && x < existing.getX() +
+    // existing.getWidth() + buffer && y + length + buffer > existing.getY()) {
+    // return true;
+    // }
+    // }
+    // case "east" -> {
+    // if (y + length + buffer > existing.getY() && y < existing.getY() +
+    // existing.getLength() + buffer && x + width + buffer > existing.getX()) {
+    // return true;
+    // }
+    // }
+    // case "west" -> {
+    // if (y + length + buffer > existing.getY() && y < existing.getY() +
+    // existing.getLength() + buffer && x - buffer < existing.getX() +
+    // existing.getWidth()) {
+    // return true;
+    // }
+    // }
+    // }
+    // }
 
-    //     return false;
+    // return false;
     // }
 }
-

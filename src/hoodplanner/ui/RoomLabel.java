@@ -279,13 +279,12 @@ public class RoomLabel extends ObjectLabel<Room> {
     private Wall findAdjacentWall(Wall wall) {
         FloorPlan floorPlan = roomController.getFloorPlan();
         for (FloorObject floorObject : floorPlan.getFloorObjects()) {
-            if (floorObject instanceof Room) {
-                Room otherRoom = (Room) floorObject;
+            if (floorObject instanceof Room otherRoom) {
                 if (otherRoom.equals(room)) {
                     continue;
                 }
                 for (Wall otherWall : otherRoom.getWalls()) {
-                    if (areWallsAdjacent(wall, otherWall)) {
+                    if (roomController.areWallsAdjacent(wall, otherWall)) {
                         return otherWall;
                     }
                 }
@@ -294,19 +293,6 @@ public class RoomLabel extends ObjectLabel<Room> {
         return null;
     }
 
-    private boolean areWallsAdjacent(Wall wall1, Wall wall2) {
-        if (wall1.getX() == wall2.getX() && wall1.getY() == wall2.getY()) {
-            System.out.println("Same position");
-            System.out.println("Wall 1: " + wall1.getX() + ", " + wall1.getY());
-            System.out.println("Wall 2: " + wall2.getX() + ", " + wall2.getY());
-            return true;
-        } else {
-            System.out.println("Different position");
-            System.out.println("Wall 1: " + wall1.getX() + ", " + wall1.getY());
-            System.out.println("Wall 2: " + wall2.getX() + ", " + wall2.getY());
-            return false;
-        }
-    }
 
     @Override
     public void move(MouseEvent e) {

@@ -253,9 +253,14 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         }
     }
 
-    private boolean areWallsAdjacent(Wall wall1, Wall wall2) {
+    public boolean areWallsAdjacent(Wall wall1, Wall wall2) {
         // Check North-South adjacency
         if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
+
+            if (wall1.getY() != wall2.getY()) {
+                return false;
+            }
+
             if (wall1.getX() < wall2.getX()) {
                 if (wall2.getX() < wall1.getX() + wall1.getLength()) {
                     return true;
@@ -269,6 +274,11 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
 
         // Check East-West adjacency
         if (wall1.getLength() == 0 && wall2.getLength() == 0) {
+            
+            if (wall1.getX() != wall2.getX()) {
+                return false;
+            }
+
             if (wall1.getY() < wall2.getY()) {
                 if (wall2.getY() < wall1.getY() + wall1.getWidth()) {
                     return true;

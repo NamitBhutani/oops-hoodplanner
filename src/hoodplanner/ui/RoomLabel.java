@@ -12,6 +12,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -84,23 +87,23 @@ public class RoomLabel extends ObjectLabel<Room> {
     }
 
     // private void openWallOptionsDialog(Wall wall, int distanceFromStart) {
-    //     // Show a dialog with options to add a door or window
-    //     String[] options = { "Add Door", "Add Window" };
-    //     int choice = JOptionPane.showOptionDialog(
-    //             this,
-    //             "Select an option:",
-    //             "Wall Options",
-    //             JOptionPane.DEFAULT_OPTION,
-    //             JOptionPane.PLAIN_MESSAGE,
-    //             null,
-    //             options,
-    //             options[0]);
+    // // Show a dialog with options to add a door or window
+    // String[] options = { "Add Door", "Add Window" };
+    // int choice = JOptionPane.showOptionDialog(
+    // this,
+    // "Select an option:",
+    // "Wall Options",
+    // JOptionPane.DEFAULT_OPTION,
+    // JOptionPane.PLAIN_MESSAGE,
+    // null,
+    // options,
+    // options[0]);
 
-    //     if (choice == 0) {
-    //         addDoorDialog(wall, distanceFromStart);
-    //     } else if (choice == 1) {
-    //         addWindowDialog(wall, distanceFromStart);
-    //     }
+    // if (choice == 0) {
+    // addDoorDialog(wall, distanceFromStart);
+    // } else if (choice == 1) {
+    // addWindowDialog(wall, distanceFromStart);
+    // }
     // }
 
     private void openWallOptionsDialog(Wall wall, int distanceFromStart) {
@@ -123,22 +126,22 @@ public class RoomLabel extends ObjectLabel<Room> {
                 editDoorDialog(wall, existingDoor);
             } else if (choice == 1) {
                 Wall other = findAdjacentWall(wall);
-                
+
                 System.out.println("Other wall: " + other);
-                
+
                 if (other != null) {
                     Door otherDoor = other.findAdjacentDoor(wall, existingDoor);
 
                     System.out.println("Other door: " + otherDoor);
                     if (otherDoor != null) {
                         other.removeDoor(otherDoor);
-                        
+
                         System.out.println("Left doors on other" + other.getDoors().size());
                     }
                 }
                 wall.removeDoor(existingDoor);
                 System.out.println("Left doors on me" + wall.getDoors().size());
-                
+
                 // roomController.syncAdjacentRoomDoors(this.room);
                 roomController.repaintRooms();
             }
@@ -156,7 +159,7 @@ public class RoomLabel extends ObjectLabel<Room> {
 
             if (choice == 0) {
                 editWindowDialog(wall, existingWindow);
-            } else if (choice == 1) {                
+            } else if (choice == 1) {
                 wall.removeWindow(existingWindow);
                 repaint();
             }
@@ -259,13 +262,13 @@ public class RoomLabel extends ObjectLabel<Room> {
         }
 
         Integer lengthStr = (Integer) JOptionPane.showInputDialog(
-            this,
-            "Select door length:",
-            "Door Length",
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            fittableLengths,
-            fittableLengths[0]);
+                this,
+                "Select door length:",
+                "Door Length",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                fittableLengths,
+                fittableLengths[0]);
 
         if (lengthStr == null) {
             System.err.println("User canceled the dialog");
@@ -299,13 +302,13 @@ public class RoomLabel extends ObjectLabel<Room> {
         }
 
         Integer lengthStr = (Integer) JOptionPane.showInputDialog(
-            this,
-            "Select window length:",
-            "Window Length",
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            fittableLengths,
-            fittableLengths[0]);
+                this,
+                "Select window length:",
+                "Window Length",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                fittableLengths,
+                fittableLengths[0]);
 
         if (lengthStr == null) {
             System.err.println("User canceled the dialog");
@@ -428,7 +431,6 @@ public class RoomLabel extends ObjectLabel<Room> {
         return null;
     }
 
-
     @Override
     public void move(MouseEvent e) {
         int thisX = getLocation().x;
@@ -443,13 +445,42 @@ public class RoomLabel extends ObjectLabel<Room> {
         setLocation(X, Y);
         room.setX(X);
         room.setY(Y);
+        checkAndRemoveAdjacentWindows();
         getParent().repaint();
+    }
+
+    private void checkAndRemoveAdjacentWindows() {
+        FloorPlan floorPlan = roomController.getFloorPlan();
+        for (FloorObject floorObject : floorPlan.getFloorObjects()) {
+            if (floorObject instanceof Room otherRoom) {
+                if (otherRoom.equals(room)) {
+                    continue;
+                }
+                for (Wall otherWall : otherRoom.getWalls()) {
+                    for (Wall wall : room.getWalls()) {
+                        if (roomController.areWallsAdjacent(wall, otherWall)) {
+                            removeWindowsFromAdjacentWalls(wall, otherWall);
+                            removeWindowsFromAdjacentWalls(otherWall, wall);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void removeWindowsFromAdjacentWalls(Wall wall1, Wall wall2) {
+        if (roomController.areWallsAdjacent(wall1, wall2)) {
+            List<Window> windowsToRemove = new ArrayList<>(wall1.getWindows());
+            for (Window window : windowsToRemove) {
+                wall1.removeWindow(window);
+            }
+        }
     }
 
     @Override
     public boolean isOverlappingAny() {
         return roomController.isOverlappingAny(this);
     }
-
 
 }

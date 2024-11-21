@@ -278,7 +278,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
 
         // Check East-West adjacency
         if (wall1.getLength() == 0 && wall2.getLength() == 0) {
-            
+
             if (wall1.getX() != wall2.getX()) {
                 return false;
             }
@@ -302,21 +302,23 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
 
         // ArrayList<Door> doors = new ArrayList<>(wall2.getDoors());
         // for (Door door : doors) {
-        //     // Remove any door that lie inside the bounds of wall1
-            
-        //     // North-South walls
-        //     if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
-        //         if (door.getDistanceFromStart() > wall1.getX() && door.getDistanceFromStart() + door.getLength() < wall1.getX() + wall1.getLength()) {
-        //             wall2.removeDoor(door);
-        //         }
-        //     }
+        // // Remove any door that lie inside the bounds of wall1
 
-        //     // East-West walls
-        //     if (wall1.getLength() == 0 && wall2.getLength() == 0) {
-        //         if (door.getDistanceFromStart() > wall1.getY() && door.getDistanceFromStart() + door.getLength() < wall1.getY() + wall1.getWidth()) {
-        //             wall2.removeDoor(door);
-        //         }
-        //     }
+        // // North-South walls
+        // if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
+        // if (door.getDistanceFromStart() > wall1.getX() && door.getDistanceFromStart()
+        // + door.getLength() < wall1.getX() + wall1.getLength()) {
+        // wall2.removeDoor(door);
+        // }
+        // }
+
+        // // East-West walls
+        // if (wall1.getLength() == 0 && wall2.getLength() == 0) {
+        // if (door.getDistanceFromStart() > wall1.getY() && door.getDistanceFromStart()
+        // + door.getLength() < wall1.getY() + wall1.getWidth()) {
+        // wall2.removeDoor(door);
+        // }
+        // }
         // }
 
         for (Door door : wall1.getDoors()) {
@@ -329,7 +331,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
             wall2.addDoor(mirroredDoor);
         }
 
-        for (Door door: wall2.getDoors()) {
+        for (Door door : wall2.getDoors()) {
             Door mirroredDoor = new Door(
                     door.getLength(),
                     calculateMirroredPosition(wall2, wall1, door));
@@ -341,8 +343,8 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         wall2.simplyfyDoors();
     }
 
-    private int calculateMirroredPosition(Wall wall1, Wall wall2, Door door) {
-        
+    public int calculateMirroredPosition(Wall wall1, Wall wall2, Door door) {
+
         // If the walls are horizontal (North-South)
         if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
             if (wall2.getX() > wall1.getX() + door.distFromStart) {

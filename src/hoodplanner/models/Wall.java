@@ -25,6 +25,11 @@ public class Wall extends FloorObject {
     }
 
 
+    public int size() {
+        return getLength() > getWidth() ? (int) getLength() : (int) getWidth();
+    }
+
+
     public List<Door> getDoors() {
         return doors;
     }

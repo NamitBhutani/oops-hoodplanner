@@ -9,9 +9,9 @@ import hoodplanner.models.Wall;
 import hoodplanner.ui.LeftPanel;
 import hoodplanner.ui.RightPanel;
 import hoodplanner.ui.RoomLabel;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.awt.Rectangle;
 
 public class RoomController extends FloorObjectController<Room, RoomLabel> {
     private FloorPlan floorPlan;
@@ -208,6 +208,11 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
                     syncAdjacentRoomWalls(room1, room2);
                 }
             }
+        }
+
+        // repaint all room labels
+        for (RoomLabel label : getObjectLabels()) {
+            label.repaint();
         }
     }
 

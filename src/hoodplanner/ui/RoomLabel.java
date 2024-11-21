@@ -105,10 +105,29 @@ public class RoomLabel extends ObjectLabel<Room> {
                 return;
             }
         }
-        String lengthStr = JOptionPane.showInputDialog(this, "Enter door length:");
+        int maxLength = wall.size();
+
+        Integer[] fittableLengths = new Integer[maxLength / 25];
+        for (int i = 0; i < maxLength / 25; i++) {
+            fittableLengths[i] = (i + 1) * 25;
+        }
+
+        Integer lengthStr = (Integer) JOptionPane.showInputDialog(
+            this,
+            "Select door length:",
+            "Door Length",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            fittableLengths,
+            fittableLengths[0]);
+
+        if (lengthStr == null) {
+            System.err.println("User canceled the dialog");
+            return; // User canceled the dialog
+        }
 
         try {
-            int length = Integer.parseInt(lengthStr);
+            int length = lengthStr;
             Door door = new Door(length, distanceFromStart);
 
             wall.addDoor(door); // Add the door to the selected wall
@@ -116,6 +135,7 @@ public class RoomLabel extends ObjectLabel<Room> {
             // if (adjacentWall != null) {
             // adjacentWall.addDoor(door); // Add the same door to the adjacent wall
             // }
+            roomController.syncAdjacentRoomDoors();
             repaint(); // Repaint to show the added door
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
@@ -129,13 +149,33 @@ public class RoomLabel extends ObjectLabel<Room> {
             return;
         }
         // Show input dialog for window length
-        String lengthStr = JOptionPane.showInputDialog(this, "Enter window length:");
+        int maxLength = wall.size();
+
+        Integer[] fittableLengths = new Integer[maxLength / 25];
+        for (int i = 0; i < maxLength / 25; i++) {
+            fittableLengths[i] = (i + 1) * 25;
+        }
+
+        Integer lengthStr = (Integer) JOptionPane.showInputDialog(
+            this,
+            "Select door length:",
+            "Door Length",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            fittableLengths,
+            fittableLengths[0]);
+
+        if (lengthStr == null) {
+            System.err.println("User canceled the dialog");
+            return; // User canceled the dialog
+        }
 
         try {
-            int length = Integer.parseInt(lengthStr);
+            int length = lengthStr;
             Window window = new Window(length, distanceFromStart);
 
             wall.addWindow(window); // Add the window to the selected wall
+            roomController.syncAdjacentRoomDoors();
             repaint(); // Repaint to show the added window
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");

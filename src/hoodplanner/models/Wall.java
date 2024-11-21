@@ -66,6 +66,54 @@ public class Wall extends FloorObject {
         windows.remove(window);
     }
 
+    public Door getDoorAt(int distanceFromStart) {
+        for (Door door: doors) {
+            if (door.getDistanceFromStart() <= distanceFromStart && door.getDistanceFromStart() + door.getLength() >= distanceFromStart) {
+                return door;
+            }
+        }
+
+        return null;
+    }
+
+    public Window getWindowAt(int distanceFromStart) {
+        for (Window window: windows) {
+            if (window.getDistanceFromStart() <= distanceFromStart && window.getDistanceFromStart() + window.getLength() >= distanceFromStart) {
+                return window;
+            }
+        }
+
+        return null;
+    }
+
+    public Door findAdjacentDoor(Wall wall, Door door) {
+        // check if I am horizontal or vertical
+        int myStart;
+        int otherStart;
+
+        // North South
+        if (getWidth() == 0 && wall.getWidth() == 0) {
+            myStart = (int) getX();
+            otherStart = (int)wall.getX();
+        } else {
+            myStart = (int) getY();
+            otherStart = (int) wall.getY();
+        }
+
+
+        for (Door otherDoor: doors) {
+            if (otherDoor == door) {
+                continue;
+            }
+
+            if (myStart + otherDoor.getDistanceFromStart() == otherStart + door.getDistanceFromStart() && otherDoor.getLength() == door.getLength()) {
+                return otherDoor;
+            }
+        }
+        return null;
+    }
+
+
     public void simplyfyDoors() {
 
         ArrayList<Door> olddoors = new ArrayList<>(this.doors);

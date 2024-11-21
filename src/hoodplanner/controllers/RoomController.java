@@ -205,6 +205,10 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         }
 
         // repaint all room labels
+        repaintRooms();
+    }
+
+    public void repaintRooms() {
         for (RoomLabel label : getObjectLabels()) {
             label.repaint();
         }

@@ -83,23 +83,162 @@ public class RoomLabel extends ObjectLabel<Room> {
         }
     }
 
+    // private void openWallOptionsDialog(Wall wall, int distanceFromStart) {
+    //     // Show a dialog with options to add a door or window
+    //     String[] options = { "Add Door", "Add Window" };
+    //     int choice = JOptionPane.showOptionDialog(
+    //             this,
+    //             "Select an option:",
+    //             "Wall Options",
+    //             JOptionPane.DEFAULT_OPTION,
+    //             JOptionPane.PLAIN_MESSAGE,
+    //             null,
+    //             options,
+    //             options[0]);
+
+    //     if (choice == 0) {
+    //         addDoorDialog(wall, distanceFromStart);
+    //     } else if (choice == 1) {
+    //         addWindowDialog(wall, distanceFromStart);
+    //     }
+    // }
+
     private void openWallOptionsDialog(Wall wall, int distanceFromStart) {
-        // Show a dialog with options to add a door or window
-        String[] options = { "Add Door", "Add Window" };
-        int choice = JOptionPane.showOptionDialog(
+        Door existingDoor = wall.getDoorAt(distanceFromStart);
+        Window existingWindow = wall.getWindowAt(distanceFromStart);
+
+        if (existingDoor != null) {
+            String[] options = { "Edit Door", "Remove Door" };
+            int choice = JOptionPane.showOptionDialog(
+                    this,
+                    "Select an option:",
+                    "Door Options",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (choice == 0) {
+                editDoorDialog(wall, existingDoor);
+            } else if (choice == 1) {
+                Wall other = findAdjacentWall(wall);
+                
+                System.out.println("Other wall: " + other);
+                
+                if (other != null) {
+                    Door otherDoor = other.findAdjacentDoor(wall, existingDoor);
+
+                    System.out.println("Other door: " + otherDoor);
+                    if (otherDoor != null) {
+                        other.removeDoor(otherDoor);
+                        
+                        System.out.println("Left doors on other" + other.getDoors().size());
+                    }
+                }
+                wall.removeDoor(existingDoor);
+                System.out.println("Left doors on me" + wall.getDoors().size());
+                
+                // roomController.syncAdjacentRoomDoors(this.room);
+                roomController.repaintRooms();
+            }
+        } else if (existingWindow != null) {
+            String[] options = { "Edit Window", "Remove Window" };
+            int choice = JOptionPane.showOptionDialog(
+                    this,
+                    "Select an option:",
+                    "Window Options",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (choice == 0) {
+                editWindowDialog(wall, existingWindow);
+            } else if (choice == 1) {                
+                wall.removeWindow(existingWindow);
+                repaint();
+            }
+        } else {
+            String[] options = { "Add Door", "Add Window" };
+            int choice = JOptionPane.showOptionDialog(
+                    this,
+                    "Select an option:",
+                    "Wall Options",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (choice == 0) {
+                addDoorDialog(wall, distanceFromStart);
+            } else if (choice == 1) {
+                addWindowDialog(wall, distanceFromStart);
+            }
+        }
+    }
+
+    private void editDoorDialog(Wall wall, Door door) {
+        int maxLength = wall.size();
+        Integer[] fittableLengths = new Integer[maxLength / 25];
+        for (int i = 0; i < maxLength / 25; i++) {
+            fittableLengths[i] = (i + 1) * 25;
+        }
+
+        Integer lengthStr = (Integer) JOptionPane.showInputDialog(
                 this,
-                "Select an option:",
-                "Wall Options",
-                JOptionPane.DEFAULT_OPTION,
+                "Select new door length:",
+                "Edit Door Length",
                 JOptionPane.PLAIN_MESSAGE,
                 null,
-                options,
-                options[0]);
+                fittableLengths,
+                door.getLength());
 
-        if (choice == 0) {
-            addDoorDialog(wall, distanceFromStart);
-        } else if (choice == 1) {
-            addWindowDialog(wall, distanceFromStart);
+        if (lengthStr == null) {
+            System.err.println("User canceled the dialog");
+            return; // User canceled the dialog
+        }
+
+        try {
+            int length = lengthStr;
+            door.setLength(length);
+            roomController.syncAdjacentRoomDoors(this.room);
+            repaint(); // Repaint to show the updated door
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for length.");
+        }
+    }
+
+    private void editWindowDialog(Wall wall, Window window) {
+        int maxLength = wall.size();
+        Integer[] fittableLengths = new Integer[maxLength / 25];
+        for (int i = 0; i < maxLength / 25; i++) {
+            fittableLengths[i] = (i + 1) * 25;
+        }
+
+        Integer lengthStr = (Integer) JOptionPane.showInputDialog(
+                this,
+                "Select new window length:",
+                "Edit Window Length",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                fittableLengths,
+                window.getLength());
+
+        if (lengthStr == null) {
+            System.err.println("User canceled the dialog");
+            return; // User canceled the dialog
+        }
+
+        try {
+            int length = lengthStr;
+            window.setLength(length);
+            roomController.syncAdjacentRoomDoors(this.room);
+            repaint(); // Repaint to show the updated window
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input for length.");
         }
     }
 
@@ -137,11 +276,7 @@ public class RoomLabel extends ObjectLabel<Room> {
             int length = lengthStr;
             Door door = new Door(length, distanceFromStart);
 
-            wall.addDoor(door); // Add the door to the selected wall
-            // Wall adjacentWall = findAdjacentWall(wall);
-            // if (adjacentWall != null) {
-            // adjacentWall.addDoor(door); // Add the same door to the adjacent wall
-            // }
+            wall.addDoor(door);
             roomController.syncAdjacentRoomDoors(this.room);
             repaint(); // Repaint to show the added door
         } catch (NumberFormatException ex) {

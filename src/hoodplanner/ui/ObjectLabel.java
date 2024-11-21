@@ -15,7 +15,7 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
     Point initialClick;
     private boolean resizing = false;
     private Color color = new Color(155, 40, 40, 255); // Default color
-    private final int SNAP_SIZE = 50;
+    private final int SNAP_SIZE = 25;
     private final int RESIZE_MARGIN = 40;
     private MouseAdapter extraAdapter;
     private Point lastValidPosition;
@@ -40,8 +40,8 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
                 if (resizing) {
                     // Snap the size to the grid
                     Dimension size = getSize();
-                    int width = (size.width / SNAP_SIZE) * SNAP_SIZE;
-                    int height = (size.height / SNAP_SIZE) * SNAP_SIZE;
+                    int width = Math.round((float) size.width / SNAP_SIZE) * SNAP_SIZE;
+                    int height = Math.round((float) size.height / SNAP_SIZE) * SNAP_SIZE;
 
                     // Set snapped size
                     setPreferredSize(new Dimension(width, height));

@@ -57,4 +57,35 @@ public class Wall extends FloorObject {
     public void addWindow(int length, int distFromStart) {
         addWindow(new Window(length, distFromStart));
     }
+
+    public void removeDoor(Door door) {
+        doors.remove(door);
+    }
+
+    public void removeWindow(Window window) {
+        windows.remove(window);
+    }
+
+    public void simplyfyDoors() {
+
+        ArrayList<Door> olddoors = new ArrayList<>(this.doors);
+        System.out.println("Old doors: " + olddoors.size());
+        for (Door door: olddoors) {
+            for (Door otherDoor: olddoors) {
+                if (door == otherDoor || !doors.contains(door) || !doors.contains(otherDoor)) {
+                    continue;
+                }
+                
+                if (otherDoor.getDistanceFromStart() + otherDoor.getLength() < door.getDistanceFromStart() + door.getLength() && otherDoor.getDistanceFromStart() >= door.getDistanceFromStart()) {
+                    System.out.println("Deleting consumed door");
+                    doors.remove(otherDoor);
+                }
+                if (otherDoor.getDistanceFromStart() < door.getDistanceFromStart() + door.getLength() && otherDoor.getDistanceFromStart() >= door.getDistanceFromStart()) {
+                    System.out.println("Merging doors");
+                    door.setLength(otherDoor.getDistanceFromStart() - door.getDistanceFromStart() + otherDoor.getLength());
+                    doors.remove(otherDoor);
+                }
+            }
+        }
+    }
 }

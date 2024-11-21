@@ -67,14 +67,14 @@ public class Room extends FloorObject {
 
     @Override
     public void setX(double x) {
-        System.out.println("Setting x to " + x);
+        // System.out.println("Setting x to " + x);
         super.setX(x);
         updateWallPositions();
     }
 
     @Override
     public void setY(double y) {
-        System.out.println("Setting y to " + y);
+        // System.out.println("Setting y to " + y);
         super.setY(y);
         updateWallPositions();
     }

@@ -19,4 +19,12 @@ public class Window implements Serializable {
         return distFromStart;
     }
 
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public void setDistanceFromStart(int distFromStart) {
+        this.distFromStart = distFromStart;
+    }
+
 }

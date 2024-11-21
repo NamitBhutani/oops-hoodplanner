@@ -42,6 +42,13 @@ public class RoomLabel extends ObjectLabel<Room> {
                     handleRightClick(e);
                 }
             }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    roomController.syncAdjacentRoomDoors(room);
+                }
+            }
         });
     }
 
@@ -135,7 +142,7 @@ public class RoomLabel extends ObjectLabel<Room> {
             // if (adjacentWall != null) {
             // adjacentWall.addDoor(door); // Add the same door to the adjacent wall
             // }
-            roomController.syncAdjacentRoomDoors();
+            roomController.syncAdjacentRoomDoors(this.room);
             repaint(); // Repaint to show the added door
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
@@ -175,7 +182,7 @@ public class RoomLabel extends ObjectLabel<Room> {
             Window window = new Window(length, distanceFromStart);
 
             wall.addWindow(window); // Add the window to the selected wall
-            roomController.syncAdjacentRoomDoors();
+            roomController.syncAdjacentRoomDoors(this.room);
             repaint(); // Repaint to show the added window
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
@@ -242,8 +249,6 @@ public class RoomLabel extends ObjectLabel<Room> {
             if (orientation.equals("horizontal")) {
                 g.fillRect(x + currentPos, y, length - currentPos, actualThickness);
             } else {
-                System.out.println("x: " + x + " y: " + y + " currentPos: " + currentPos + " actualThickness: "
-                        + actualThickness + " length: " + length + " currentPos: " + currentPos);
                 g.fillRect(x, y + currentPos, actualThickness, length - currentPos);
             }
         }
@@ -317,7 +322,6 @@ public class RoomLabel extends ObjectLabel<Room> {
         setLocation(X, Y);
         room.setX(X);
         room.setY(Y);
-        roomController.syncAdjacentRoomDoors();
         getParent().repaint();
     }
 
@@ -325,4 +329,6 @@ public class RoomLabel extends ObjectLabel<Room> {
     public boolean isOverlappingAny() {
         return roomController.isOverlappingAny(this);
     }
+
+
 }

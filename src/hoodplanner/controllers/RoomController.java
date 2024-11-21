@@ -189,24 +189,18 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
                 y >= existing.getY() + existing.getLength() + buffer);
     }
 
-    public void syncAdjacentRoomDoors() {
-        FloorPlan floorPlan = getFloorPlan();
-
+    public void syncAdjacentRoomDoors(Room room1) {
         // Iterate through all rooms
-        for (FloorObject obj1 : floorPlan.getFloorObjects()) {
-            if (!(obj1 instanceof Room))
+
+        for (FloorObject obj2 : floorPlan.getFloorObjects()) {
+            if (!(obj2 instanceof Room) || room1 == obj2)
                 continue;
-            Room room1 = (Room) obj1;
+            Room room2 = (Room) obj2;
 
-            for (FloorObject obj2 : floorPlan.getFloorObjects()) {
-                if (!(obj2 instanceof Room) || obj1 == obj2)
-                    continue;
-                Room room2 = (Room) obj2;
-
-                // Check if rooms are now adjacent
-                if (areRoomsAdjacent(room1, room2)) {
-                    syncAdjacentRoomWalls(room1, room2);
-                }
+            // Check if rooms are now adjacent
+            if (areRoomsAdjacent(room1, room2)) {
+                System.err.println("Rooms are adjacent: " + room1.getName() + " and " + room2.getName());
+                syncAdjacentRoomWalls(room1, room2);
             }
         }
 
@@ -238,36 +232,51 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
     }
 
     private void syncAdjacentRoomWalls(Room room1, Room room2) {
-        Wall[] walls1 = { room1.northWall, room1.southWall, room1.eastWall, room1.westWall };
-        Wall[] walls2 = { room2.northWall, room2.southWall, room2.eastWall, room2.westWall };
+        // Compare north and south walls between room1 and room2
+        if (areWallsAdjacent(room1.northWall, room2.southWall)) {
+            System.out.println("Room 1 North and Room 2 South are adjacent");
+            syncWallDoors(room1.northWall, room2.southWall);
+        }
+        if (areWallsAdjacent(room1.southWall, room2.northWall)) {
+            System.out.println("Room 1 South and Room 2 North are adjacent");
+            syncWallDoors(room1.southWall, room2.northWall);
+        }
 
-        for (Wall wall1 : walls1) {
-            for (Wall wall2 : walls2) {
-                if (areWallsAdjacent(wall1, wall2)) {
-                    syncWallDoors(wall1, wall2);
-                }
-            }
+        // Compare east and west walls between room1 and room2
+        if (areWallsAdjacent(room1.eastWall, room2.westWall)) {
+            System.out.println("Room 1 East and Room 2 West are adjacent");
+            syncWallDoors(room1.eastWall, room2.westWall);
+        }
+        if (areWallsAdjacent(room1.westWall, room2.eastWall)) {
+            System.out.println("Room 1 West and Room 2 East are adjacent");
+            syncWallDoors(room1.westWall, room2.eastWall);
         }
     }
 
     private boolean areWallsAdjacent(Wall wall1, Wall wall2) {
-        double tolerance = 5.0; // Tolerance for considering walls adjacent
-
         // Check North-South adjacency
-        if (Math.abs(wall1.getLength() - wall2.getLength()) < tolerance) {
-            // Horizontal walls (North and South)
-            if (Math.abs(wall1.getY() - wall2.getY()) < tolerance) {
-                return Math.abs(wall1.getX() + wall1.getLength() - wall2.getX()) < tolerance ||
-                        Math.abs(wall2.getX() + wall2.getLength() - wall1.getX()) < tolerance;
+        if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
+            if (wall1.getX() < wall2.getX()) {
+                if (wall2.getX() < wall1.getX() + wall1.getLength()) {
+                    return true;
+                }
+            } else {
+                if (wall1.getX() < wall2.getX() + wall2.getLength()) {
+                    return true;
+                }
             }
         }
 
         // Check East-West adjacency
-        if (Math.abs(wall1.getWidth() - wall2.getWidth()) < tolerance) {
-            // Vertical walls (East and West)
-            if (Math.abs(wall1.getX() - wall2.getX()) < tolerance) {
-                return Math.abs(wall1.getY() + wall1.getWidth() - wall2.getY()) < tolerance ||
-                        Math.abs(wall2.getY() + wall2.getWidth() - wall1.getY()) < tolerance;
+        if (wall1.getLength() == 0 && wall2.getLength() == 0) {
+            if (wall1.getY() < wall2.getY()) {
+                if (wall2.getY() < wall1.getY() + wall1.getWidth()) {
+                    return true;
+                }
+            } else {
+                if (wall1.getY() < wall2.getY() + wall2.getWidth()) {
+                    return true;
+                }
             }
         }
 
@@ -276,40 +285,71 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
 
     private void syncWallDoors(Wall wall1, Wall wall2) {
         // Copy doors from wall1 to wall2, adjusting positions
-        for (Door door : wall1.getDoors()) {
-            // Check if this door already exists on wall2
-            boolean doorExists = wall2.getDoors().stream()
-                    .anyMatch(existingDoor -> Math
-                            .abs(existingDoor.getDistanceFromStart()
-                                    - calculateMirroredPosition(wall1, wall2, door.getDistanceFromStart())) < 5
-                            &&
-                            existingDoor.getLength() == door.getLength());
 
-            if (!doorExists) {
-                // Create a new door on wall2 with mirrored position
-                Door mirroredDoor = new Door(
-                        door.getLength(),
-                        calculateMirroredPosition(wall1, wall2, door.getDistanceFromStart()));
-                wall2.addDoor(mirroredDoor);
-            }
+        // ArrayList<Door> doors = new ArrayList<>(wall2.getDoors());
+        // for (Door door : doors) {
+        //     // Remove any door that lie inside the bounds of wall1
+            
+        //     // North-South walls
+        //     if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
+        //         if (door.getDistanceFromStart() > wall1.getX() && door.getDistanceFromStart() + door.getLength() < wall1.getX() + wall1.getLength()) {
+        //             wall2.removeDoor(door);
+        //         }
+        //     }
+
+        //     // East-West walls
+        //     if (wall1.getLength() == 0 && wall2.getLength() == 0) {
+        //         if (door.getDistanceFromStart() > wall1.getY() && door.getDistanceFromStart() + door.getLength() < wall1.getY() + wall1.getWidth()) {
+        //             wall2.removeDoor(door);
+        //         }
+        //     }
+        // }
+
+        for (Door door : wall1.getDoors()) {
+
+            // Create a new door on wall2 with mirrored position
+            Door mirroredDoor = new Door(
+                    door.getLength(),
+                    calculateMirroredPosition(wall1, wall2, door));
+            System.out.println("Mirrored door position on wall2: " + mirroredDoor.getDistanceFromStart());
+            wall2.addDoor(mirroredDoor);
         }
+
+        for (Door door: wall2.getDoors()) {
+            Door mirroredDoor = new Door(
+                    door.getLength(),
+                    calculateMirroredPosition(wall2, wall1, door));
+            System.out.println("Mirrored door position on wall1: " + mirroredDoor.getDistanceFromStart());
+            wall1.addDoor(mirroredDoor);
+        }
+
+        wall1.simplyfyDoors();
+        wall2.simplyfyDoors();
     }
 
-    private int calculateMirroredPosition(Wall wall1, Wall wall2, int originalPosition) {
-        // For North-South walls (horizontal)
-        if (Math.abs(wall1.getLength() - wall2.getLength()) < 5) {
-            // Maintain proportional position
-            return (int) (originalPosition * (wall2.getLength() / wall1.getLength()));
+    private int calculateMirroredPosition(Wall wall1, Wall wall2, Door door) {
+        
+        // If the walls are horizontal (North-South)
+        if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
+            if (wall2.getX() > wall1.getX() + door.distFromStart) {
+                // Not possible to mirror
+                return 0;
+            } else {
+                return (int) (wall1.getX() + door.distFromStart - wall2.getX());
+            }
         }
 
-        // For East-West walls (vertical)
-        if (Math.abs(wall1.getWidth() - wall2.getWidth()) < 5) {
-            // Maintain proportional position
-            return (int) (originalPosition * (wall2.getWidth() / wall1.getWidth()));
+        // If the walls are vertical (East-West)
+        if (wall1.getLength() == 0 && wall2.getLength() == 0) {
+            if (wall2.getY() > wall1.getY() + door.distFromStart) {
+                // Not possible to mirror
+                return 0;
+            } else {
+                return (int) (wall1.getY() + door.distFromStart - wall2.getY());
+            }
         }
 
-        // Fallback to simple mirroring
-        return (int) (wall1.getLength() - originalPosition);
+        return -1;
     }
 
     // public boolean hasNeighbor(FloorObject object, String direction) {

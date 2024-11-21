@@ -112,10 +112,10 @@ public class RoomLabel extends ObjectLabel<Room> {
             Door door = new Door(length, distanceFromStart);
 
             wall.addDoor(door); // Add the door to the selected wall
-            Wall adjacentWall = findAdjacentWall(wall);
-            if (adjacentWall != null) {
-                adjacentWall.addDoor(door); // Add the same door to the adjacent wall
-            }
+            // Wall adjacentWall = findAdjacentWall(wall);
+            // if (adjacentWall != null) {
+            // adjacentWall.addDoor(door); // Add the same door to the adjacent wall
+            // }
             repaint(); // Repaint to show the added door
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
@@ -277,6 +277,8 @@ public class RoomLabel extends ObjectLabel<Room> {
         setLocation(X, Y);
         room.setX(X);
         room.setY(Y);
+        roomController.syncAdjacentRoomDoors();
+        getParent().repaint();
     }
 
     @Override

@@ -278,7 +278,7 @@ public class RoomLabel extends ObjectLabel<Room> {
 
             wall.addDoor(door);
             roomController.syncAdjacentRoomDoors(this.room);
-            repaint(); // Repaint to show the added door
+            roomController.repaintRooms(); // Repaint to show the added door
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
         }

@@ -73,7 +73,7 @@ public class Wall extends FloorObject {
         for (Door door: olddoors) {
             for (Door otherDoor: olddoors) {
                 if (door == otherDoor || !doors.contains(door) || !doors.contains(otherDoor)) {
-                    continue;
+                    continue; // TODO: Fix this bug it doesnt simplify all doors
                 }
                 
                 if (otherDoor.getDistanceFromStart() + otherDoor.getLength() < door.getDistanceFromStart() + door.getLength() && otherDoor.getDistanceFromStart() >= door.getDistanceFromStart()) {

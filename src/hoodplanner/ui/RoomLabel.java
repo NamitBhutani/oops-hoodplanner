@@ -165,8 +165,8 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         Integer lengthStr = (Integer) JOptionPane.showInputDialog(
             this,
-            "Select door length:",
-            "Door Length",
+            "Select window length:",
+            "Window Length",
             JOptionPane.PLAIN_MESSAGE,
             null,
             fittableLengths,

@@ -23,7 +23,7 @@ public class AddRoomPopup {
         JPanel mainPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         
         // Name and type (compulsory fields)
-        JTextField nameField = new JTextField();
+        JTextField nameField = new JTextField("Room");
         JComboBox<RoomType> typeField = new JComboBox<>(RoomType.values()); // example types
         
         mainPanel.add(new JLabel("Room Name:"));
@@ -80,7 +80,7 @@ public class AddRoomPopup {
         // Submit button
         JButton submitButton = new JButton("Add Room");
         submitButton.addActionListener((ActionEvent e) -> {
-            String roomName = nameField.getText();
+            String roomName = nameField.getText().equals("") ?  "Room" : nameField.getText(); // Default name
             RoomType roomType = (RoomType) typeField.getSelectedItem();
             double width = Double.parseDouble(widthField.getText());
             double height = Double.parseDouble(heightField.getText());

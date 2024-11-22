@@ -29,7 +29,7 @@ public class MainFrame extends JFrame {
         TopMenuBar menuBar = new TopMenuBar(rightPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setResizeWeight(0.8);
+        splitPane.setResizeWeight(1);
 
         // Add all object labels to the left panel
         for (FloorObjectController<?, ?> controller : controllers) {

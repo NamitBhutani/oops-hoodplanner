@@ -4,6 +4,7 @@ import hoodplanner.controllers.RoomController;
 import hoodplanner.models.Door;
 import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
+import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
 import hoodplanner.models.RoomType;
 import hoodplanner.models.Wall;
@@ -14,16 +15,19 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+
 
 public class RoomLabel extends ObjectLabel<Room> {
 
     private final Room room;
     private final RoomController roomController;
+    private boolean isHighlighted = false; // Track if the room is highlighted
     private final int wallThickness = 4; // Adjust thickness as needed
+
 
     public RoomLabel(Room room, RoomController roomController) {
         super(room);
@@ -83,6 +87,38 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         if (clickedWall != null) {
             openWallOptionsDialog(clickedWall, distanceFromStart);
+        }
+
+        // Check if any furniture is clicked
+        System.out.println("Clicked x:" + x + "y:" + y);
+        for (Furniture furniture : room.getContainedFurniture()) {
+            if (furniture.containsPoint(x, y)) {
+                handleFurnitureClick(furniture);
+            return;
+            }
+        }
+    }
+
+    private void handleFurnitureClick(Furniture furniture) {
+
+        // Show a dialog with options to remove or rotate the furniture
+        String[] options = { "Remove Furniture", "Rotate Furniture" };
+        int choice = JOptionPane.showOptionDialog(
+            this,
+            "Select an option:",
+            "Furniture Options",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]);
+
+        if (choice == 0) {
+            room.removeContainedObject(furniture);
+            roomController.repaintRooms();
+        } else if (choice == 1) {
+            furniture.rotate();
+            roomController.repaintRooms();
         }
     }
 
@@ -331,6 +367,14 @@ public class RoomLabel extends ObjectLabel<Room> {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Draw furniture in the room
+
+        System.out.println("Furnitures" + room.getContainedFurniture().size());
+        for (Furniture furniture : room.getContainedFurniture()) {
+            // Use the draw method to render the furniture image
+            furniture.draw(g, (int) furniture.getX(), (int) furniture.getY(), this);
+        }
+
         // Draw walls
         g.setColor(Color.WHITE); // Wall color
         int width = getWidth();
@@ -353,6 +397,10 @@ public class RoomLabel extends ObjectLabel<Room> {
         drawWallWithDoorsAndWindows(g, room.westWall, 0, 0, height, wallThickness, hasLeftNeighbor, "vertical");
         drawWallWithDoorsAndWindows(g, room.eastWall, width - wallThickness, 0, height, wallThickness, hasRightNeighbor,
                 "vertical");
+
+
+
+
     }
 
     // Helper method to draw a wall with doors and windows
@@ -431,6 +479,19 @@ public class RoomLabel extends ObjectLabel<Room> {
         return null;
     }
 
+    // Highlight the room
+    public void setHighlight(boolean highlight) {
+        this.isHighlighted = highlight;
+        if (highlight) {
+            setBackground(Color.YELLOW); // Highlight with a yellow color
+            setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border for highlight
+        } else {
+            setBackground(Color.WHITE); // Reset to white background when unhighlighted
+            setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Default border
+        }
+    }
+
+    // Method to move the room label with mouse drag
     @Override
     public void move(MouseEvent e) {
         int thisX = getLocation().x;
@@ -478,6 +539,7 @@ public class RoomLabel extends ObjectLabel<Room> {
         }
     }
 
+    // Check if this room label is overlapping with any other room labels
     @Override
     public boolean isOverlappingAny() {
         return roomController.isOverlappingAny(this);

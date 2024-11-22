@@ -129,8 +129,8 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
                 imageLabel.setIcon(new ImageIcon(scaledImage));
             } catch (Exception e) {
                 imageLabel.setText("No Image");
-                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
             }
+            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
             furnitureItemPanel.add(imageLabel, BorderLayout.CENTER);
 
             // Furniture name

@@ -40,6 +40,8 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
         Point location = dtde.getLocation();
+
+
         targetRoom = findRoomAtLocation(location);
         if (targetRoom != null) {
             targetRoom.setHighlight(true);
@@ -50,6 +52,7 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
         Point location = dtde.getLocation();
+
         Room newTargetRoom = findRoomAtLocation(location);
         if (newTargetRoom != targetRoom) {
             if (targetRoom != null) {

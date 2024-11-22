@@ -207,8 +207,26 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     }
 
     public void setSelectedObjectLabel(L objectLabel) {
+
+        if (objectLabel == null) {
+            if (selectedObjectLabel instanceof RoomLabel roomLabel) {
+                roomLabel.setHighlight(false);
+            }
+            selectedObjectLabel = null;
+            positionLabel.setText("Position: ");
+            dimensionLabel.setText("Dimensions: ");
+            showAddObjectView();
+            return;
+        }
+        if (selectedObjectLabel instanceof RoomLabel roomLabel) {
+            roomLabel.setHighlight(false);
+        }
         selectedObjectLabel = objectLabel;
+        if (objectLabel instanceof RoomLabel roomLabel) {
+            roomLabel.setHighlight(true);
+        }
         update(objectLabel);
+        showAddObjectView();
     }
 
     private void update(L objectLabel) {
@@ -237,5 +255,9 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         } else {
             roomTypeDropdown.setEnabled(false);
         }
+    }
+
+    public L getSelectedObjectLabel() {
+        return selectedObjectLabel;
     }
 }

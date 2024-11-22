@@ -17,12 +17,13 @@ public abstract class FloorObjectController<T extends FloorObject, L extends Obj
         label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                rightPanel.setSelectedObjectLabel(label);
+            if (e.getClickCount() == 2) {
+                if (rightPanel.getSelectedObjectLabel() == label) {
+                    rightPanel.setSelectedObjectLabel(null);
+                } else {
+                    rightPanel.setSelectedObjectLabel(label);
+                }
             }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                rightPanel.setSelectedObjectLabel(label);
             }
         });
         

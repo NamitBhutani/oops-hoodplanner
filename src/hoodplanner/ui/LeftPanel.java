@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class LeftPanel extends JPanel implements DropTargetListener {
-    private Room targetRoom;
+    private RoomLabel targetRoom;
     private ArrayList<Furniture> availableFurniture;
 
     public LeftPanel() {
@@ -53,7 +53,7 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     public void dragOver(DropTargetDragEvent dtde) {
         Point location = dtde.getLocation();
 
-        Room newTargetRoom = findRoomAtLocation(location);
+        RoomLabel newTargetRoom = findRoomAtLocation(location);
         if (newTargetRoom != targetRoom) {
             if (targetRoom != null) {
                 targetRoom.setHighlight(false);
@@ -87,18 +87,21 @@ public class LeftPanel extends JPanel implements DropTargetListener {
                 String furnitureName = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
                 if (targetRoom != null) {
+
+                    Room room = targetRoom.getRoom();
                     Point dropLocation = dtde.getLocation();
-                    Point relativeLocation = convertToRoomCoordinates(dropLocation, targetRoom);
+                    Point relativeLocation = convertToRoomCoordinates(dropLocation, room);
 
                     Furniture furniture = createFurnitureByName(furnitureName, relativeLocation);
                     // System.out.println("Furniture: " + furniture);
                     if (furniture != null) {
-                        targetRoom.addContainedObject(furniture);
+                        room.addContainedObject(furniture);
+                        targetRoom.setHighlight(false);
+                        repaint();
                         JOptionPane.showMessageDialog(this,
-                            furniture.getName() + " added to " + targetRoom.getName());
+                        furniture.getName() + " added to " + room.getName());
                     }
 
-                    repaint();
                 } else {
                     JOptionPane.showMessageDialog(this, "Drop target not found");
                 }
@@ -111,12 +114,12 @@ public class LeftPanel extends JPanel implements DropTargetListener {
         }
     }
 
-    private Room findRoomAtLocation(Point location) {
+    private RoomLabel findRoomAtLocation(Point location) {
         for (Component comp : getComponents()) {
             if (comp instanceof RoomLabel roomLabel) {
                 Rectangle bounds = comp.getBounds();
                 if (bounds.contains(location)) {
-                    return roomLabel.getObject();
+                    return roomLabel;
                 }
             }
         }

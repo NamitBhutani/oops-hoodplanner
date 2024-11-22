@@ -15,7 +15,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -369,7 +368,6 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         // Draw furniture in the room
 
-        System.out.println("Furnitures" + room.getContainedFurniture().size());
         for (Furniture furniture : room.getContainedFurniture()) {
             // Use the draw method to render the furniture image
             furniture.draw(g, (int) furniture.getX(), (int) furniture.getY(), this);
@@ -482,12 +480,15 @@ public class RoomLabel extends ObjectLabel<Room> {
     // Highlight the room
     public void setHighlight(boolean highlight) {
         this.isHighlighted = highlight;
+
+        System.out.println("Highlighting room: " + highlight);
         if (highlight) {
-            setBackground(Color.YELLOW); // Highlight with a yellow color
-            setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border for highlight
+            Color originalColor = room.getType().getColor();
+            Color highlightColor = originalColor.brighter();
+            setBackground(highlightColor);
+            // setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border for highlight
         } else {
-            setBackground(Color.WHITE); // Reset to white background when unhighlighted
-            setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); // Default border
+            setBackground(room.getType().getColor()); // Reset to the room's original color
         }
     }
 
@@ -543,6 +544,11 @@ public class RoomLabel extends ObjectLabel<Room> {
     @Override
     public boolean isOverlappingAny() {
         return roomController.isOverlappingAny(this);
+    }
+
+
+    public Room getRoom() {
+        return room;
     }
 
 }

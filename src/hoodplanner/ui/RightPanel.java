@@ -36,44 +36,59 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
-        // Add Object Panel
         addObjectPanel = new JPanel();
-        addObjectPanel.setLayout(null);
-
+        addObjectPanel.setLayout(new BoxLayout(addObjectPanel, BoxLayout.Y_AXIS));
+        addObjectPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Header
         objectName = new JLabel("Details Panel");
-        objectName.setBounds(10, 10, 300, 25);
-        objectName.setFont(objectName.getFont().deriveFont(16.0f));
-
-        positionLabel = new JLabel("Position: ");
-        positionLabel.setBounds(10, 40, 300, 25);
-        dimensionLabel = new JLabel("Dimensions: ");
-        dimensionLabel.setBounds(10, 70, 300, 25);
-
+        objectName.setFont(objectName.getFont().deriveFont(Font.BOLD, 16f));
+        objectName.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(objectName);
+        addObjectPanel.add(Box.createVerticalStrut(20));
+        
+        // Position and Dimensions
+        positionLabel = new JLabel("Position: ");
+        positionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(positionLabel);
+        addObjectPanel.add(Box.createVerticalStrut(10));
+        
+        dimensionLabel = new JLabel("Dimensions: ");
+        dimensionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(dimensionLabel);
-
-        roomTypeDropdown = new JComboBox<>(RoomType.values());
+        addObjectPanel.add(Box.createVerticalStrut(20));
+        
+        // Room type selection
         JLabel typeLabel = new JLabel("Select Room Type:");
-        typeLabel.setBounds(10, 95, 300, 25);
-        roomTypeDropdown.setBounds(10, 120, 200, 25);
-
+        typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(typeLabel);
+        addObjectPanel.add(Box.createVerticalStrut(5));
+        
+        roomTypeDropdown = new JComboBox<>(RoomType.values());
+        roomTypeDropdown.setMaximumSize(new Dimension(200, 25));
+        roomTypeDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(roomTypeDropdown);
-
+        addObjectPanel.add(Box.createVerticalStrut(20));
+        
+        // Remove button
+        removeObjectButton = new JButton("Remove Room");
+        removeObjectButton.setMaximumSize(new Dimension(200, 30));
+        removeObjectButton.setBackground(new Color(220, 53, 69));
+        removeObjectButton.setForeground(Color.WHITE);
+        removeObjectButton.setFocusPainted(false);
+        removeObjectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        addObjectPanel.add(removeObjectButton);
+        
+        // Your existing action listeners can remain the same
         roomTypeDropdown.addActionListener(e -> {
             if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
                 RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
                 room.setType(selectedType);
                 selectedObjectLabel.setColor(selectedType.getColor());
-                this.leftPanel.repaint();
+                leftPanel.repaint();
             }
         });
-
-        removeObjectButton = new JButton("Remove Room");
-        removeObjectButton.setBounds(10, 160, 200, 25);
-        addObjectPanel.add(removeObjectButton);
-
+        
         removeObjectButton.addActionListener(e -> {
             if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
                 Room room = (Room) selectedObjectLabel.getObject();
@@ -89,6 +104,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         addItemPanel.setLayout(new BorderLayout());
 
         JLabel addItemLabel = new JLabel("Available Furniture");
+        addItemLabel.setFont(objectName.getFont().deriveFont(Font.BOLD, 16f));
         addItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
         addItemPanel.add(addItemLabel, BorderLayout.NORTH);
 
@@ -191,8 +207,26 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     }
 
     public void setSelectedObjectLabel(L objectLabel) {
+
+        if (objectLabel == null) {
+            if (selectedObjectLabel instanceof RoomLabel roomLabel) {
+                roomLabel.setHighlight(false);
+            }
+            selectedObjectLabel = null;
+            positionLabel.setText("Position: ");
+            dimensionLabel.setText("Dimensions: ");
+            showAddObjectView();
+            return;
+        }
+        if (selectedObjectLabel instanceof RoomLabel roomLabel) {
+            roomLabel.setHighlight(false);
+        }
         selectedObjectLabel = objectLabel;
+        if (objectLabel instanceof RoomLabel roomLabel) {
+            roomLabel.setHighlight(true);
+        }
         update(objectLabel);
+        showAddObjectView();
     }
 
     private void update(L objectLabel) {
@@ -221,5 +255,9 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         } else {
             roomTypeDropdown.setEnabled(false);
         }
+    }
+
+    public L getSelectedObjectLabel() {
+        return selectedObjectLabel;
     }
 }

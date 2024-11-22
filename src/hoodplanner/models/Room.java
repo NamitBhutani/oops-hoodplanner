@@ -110,12 +110,6 @@ public class Room extends FloorObject {
     }
 
 
-    // Implementing the highlight feature
-    public void setHighlight(boolean highlight) {
-        // This can be used to highlight the room when dragging and dropping
-        // You can change the room's background color or draw a border around the room to indicate highlighting
-    }
-
     public Point getLocation() {
         return new Point((int) getX(), (int) getY());
 

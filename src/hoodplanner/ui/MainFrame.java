@@ -9,6 +9,7 @@ import hoodplanner.models.Room;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainFrame extends JFrame {
     private RoomController roomController;
@@ -28,7 +29,7 @@ public class MainFrame extends JFrame {
         TopMenuBar menuBar = new TopMenuBar(rightPanel);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setResizeWeight(0.8);
+        splitPane.setResizeWeight(1);
 
         // Add all object labels to the left panel
         for (FloorObjectController<?, ?> controller : controllers) {
@@ -46,8 +47,16 @@ public class MainFrame extends JFrame {
 
         menuBar.getItem("Load").addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Hood Files (*.hood)", "hood"));
+
             int returnValue = fileChooser.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
+                if (!fileChooser.getSelectedFile().getName().endsWith(".hood")) {
+                    JOptionPane.showMessageDialog(null, "Invalid file type. Please select a .hood file.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 try {
                     FloorPlan loadedFloorPlan = FloorPlan.loadFromFile(fileChooser.getSelectedFile().getPath());
                     loadFloorPlan(loadedFloorPlan);
@@ -62,8 +71,15 @@ public class MainFrame extends JFrame {
 
         menuBar.getItem("Save As").addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Hood Files (*.hood)", "hood"));
+        
             int returnValue = fileChooser.showSaveDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getPath();
+                if (!filePath.endsWith(".hood")) {
+                    filePath += ".hood"; // Automatically append the .hood extension
+                }
+        
                 try {
                     floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
                     setTitle(floorPlan.displayName());
@@ -73,6 +89,7 @@ public class MainFrame extends JFrame {
                 }
             }
         });
+        
 
         menuBar.getItem("Save").addActionListener(e -> {
             if (floorPlan.saveFilePath == null) {

@@ -36,28 +36,6 @@ public class LeftPanel extends JPanel implements DropTargetListener {
         repaint();
     }
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // Draw all rooms and their contained furniture
-        for (Component comp : getComponents()) {
-            if (comp instanceof RoomLabel roomLabel) {
-                Room room = roomLabel.getObject();
-                Rectangle bounds = roomLabel.getBounds();
-
-                // Draw the room
-                g.setColor(room.getType() != null ? room.getType().getColor() : Color.LIGHT_GRAY);
-                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-
-                // Draw furniture in the room
-                for (Furniture furniture : room.getContainedFurniture()) {
-                    // Use the draw method to render the furniture image
-                    furniture.draw(g, bounds.x + (int) furniture.getX(), bounds.y + (int) furniture.getY());
-                }
-            }
-        }
-    }
 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {

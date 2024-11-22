@@ -4,20 +4,19 @@ import hoodplanner.controllers.RoomController;
 import hoodplanner.models.Door;
 import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
+import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
 import hoodplanner.models.RoomType;
 import hoodplanner.models.Wall;
 import hoodplanner.models.Window;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -359,6 +358,19 @@ public class RoomLabel extends ObjectLabel<Room> {
         drawWallWithDoorsAndWindows(g, room.westWall, 0, 0, height, wallThickness, hasLeftNeighbor, "vertical");
         drawWallWithDoorsAndWindows(g, room.eastWall, width - wallThickness, 0, height, wallThickness, hasRightNeighbor,
                 "vertical");
+
+
+        // draw furniture 
+                // Draw furniture in the room
+
+        Rectangle bounds = getBounds();
+        System.out.println("Furnitures" + room.getContainedFurniture().size());
+        for (Furniture furniture : room.getContainedFurniture()) {
+            // Use the draw method to render the furniture image
+            System.out.println("Drawing furniture: " + furniture.getName() + "at x:" + bounds.x + "fx: " + (int) furniture.getX() + " y:"  + bounds.y  + "fy: " + (int) furniture.getY()); // Debug message
+            furniture.draw(g, (int) furniture.getX(), (int) furniture.getY(), this);
+        }
+
     }
 
     // Helper method to draw a wall with doors and windows

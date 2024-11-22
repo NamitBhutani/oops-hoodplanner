@@ -109,18 +109,6 @@ public class Room extends FloorObject {
                  newFurniture.getY() >= existingFurniture.getY() + existingFurniture.getLength());
     }
 
-    // Paint method to render the room and the furniture inside it
-    public void paint(Graphics g) {
-        // Paint the room background first
-        g.setColor(Color.LIGHT_GRAY);  // Or any other room color
-        g.fillRect(0, 0, (int) getWidth(), (int) getLength());
-
-        // Paint the furniture inside the room
-        for (Furniture furniture : containedFurniture) {
-            // Make sure each furniture item gets drawn at its specified position
-            furniture.draw(g, (int) getX(), (int) getY());
-        }
-    }
 
     // Implementing the highlight feature
     public void setHighlight(boolean highlight) {

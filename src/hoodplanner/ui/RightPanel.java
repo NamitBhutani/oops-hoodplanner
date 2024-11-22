@@ -105,7 +105,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         refreshFurnitureDisplay();
     }
 
-    public void loadAvailableFurniture() {
+    public final void loadAvailableFurniture() {
         availableFurniture.add(new Furniture(5, 5, 50.0, 90.0, "Sofa", "src/hoodplanner/public/sofa(1).png"));
         availableFurniture.add(new Furniture(5, 5, 60.0, 90.0, "Bed", "src/hoodplanner/public/bed.png"));
         availableFurniture.add(new Furniture(5, 5, 50.0, 80.0, "Toilet", "src/hoodplanner/public/toilet.png"));
@@ -172,6 +172,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
             room.addContainedObject(furniture);
             JOptionPane.showMessageDialog(this, furniture.getName() + " added to " + room.getName());
+            roomController.repaintRooms();
             leftPanel.repaint();
         } else {
             JOptionPane.showMessageDialog(this, "Please select a room before adding furniture.", "No Room Selected", JOptionPane.WARNING_MESSAGE);

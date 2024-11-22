@@ -6,10 +6,9 @@ import hoodplanner.models.FloorObject;
 import hoodplanner.models.FloorPlan;
 import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
-
-import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
     private RoomController roomController;
@@ -52,6 +51,8 @@ public class MainFrame extends JFrame {
                 try {
                     FloorPlan loadedFloorPlan = FloorPlan.loadFromFile(fileChooser.getSelectedFile().getPath());
                     loadFloorPlan(loadedFloorPlan);
+                    leftPanel.revalidate();
+                    leftPanel.repaint();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "Failed to load floor plan", "Error", JOptionPane.ERROR_MESSAGE);

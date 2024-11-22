@@ -188,5 +188,34 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
     public void setSelectedObjectLabel(L objectLabel) {
         selectedObjectLabel = objectLabel;
+        update(objectLabel);
+    }
+
+    private void update(L objectLabel) {
+        if (objectLabel == null) {
+            return;
+        }
+        T object = objectLabel.getObject();
+        double x = object.getX();
+        double y = object.getY();
+        double width = object.getWidth();
+        double length = object.getLength();
+
+        // Update the labels with the object's position and size
+        positionLabel.setText("Position: X = " + x + ", Y = " + y);
+        dimensionLabel.setText("Dimensions: Width = " + width + ", Length = " + length);
+
+        if (object instanceof Room room) {
+            objectName.setText("Details Panel: " + room.getName());
+            Color bgColor = objectLabel.getBackground();
+            for (RoomType type : RoomType.values()) {
+                if (bgColor.equals(type.getColor())) {
+                    roomTypeDropdown.setSelectedItem(type);
+                    break;
+                }
+            }
+        } else {
+            roomTypeDropdown.setEnabled(false);
+        }
     }
 }

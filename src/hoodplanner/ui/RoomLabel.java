@@ -11,14 +11,14 @@ import hoodplanner.models.Wall;
 import hoodplanner.models.Window;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.*;
+import java.awt.Point;
 
 
 public class RoomLabel extends ObjectLabel<Room> {
@@ -27,7 +27,9 @@ public class RoomLabel extends ObjectLabel<Room> {
     private final RoomController roomController;
     private boolean isHighlighted = false; // Track if the room is highlighted
     private final int wallThickness = 4; // Adjust thickness as needed
-
+    private Furniture selectedFurniture = null;
+    private Point dragStart = null;
+    
 
     public RoomLabel(Room room, RoomController roomController) {
         super(room);
@@ -38,36 +40,112 @@ public class RoomLabel extends ObjectLabel<Room> {
         } else {
             setColor(Color.WHITE);
         }
+        for (MouseMotionListener listener : getMouseMotionListeners()) {
+            removeMouseMotionListener(listener);
+        }
+        
 
-        // Add padding to account for wall thickness
-        setBorder(new EmptyBorder(wallThickness, wallThickness, wallThickness, wallThickness));
-        // Add mouse listener for right-click detection
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (selectedFurniture == null) {
+                    move(e); // Restore original room movement
+                } else {
+                    int dx = e.getX() - dragStart.x;
+                    int dy = e.getY() - dragStart.y;
+                    
+                    // Calculate new position
+                    double newX = selectedFurniture.getX() + dx;
+                    double newY = selectedFurniture.getY() + dy;
+                    
+                    // Check if new position is within room bounds
+                    if (isWithinRoomBounds(newX, newY, selectedFurniture)) {
+                        // Check for overlap with other furniture
+                        boolean canMove = true;
+                        for (Furniture other : room.getContainedFurniture()) {
+                            if (other != selectedFurniture) {
+                                Furniture tempFurniture = new Furniture(
+                                    selectedFurniture.getLength(),
+                                    selectedFurniture.getWidth(),
+                                    newX,
+                                    newY,
+                                    selectedFurniture.getName(),
+                                    selectedFurniture.getImagePath()
+                                );
+                                if (other.checkOverlap(tempFurniture)) {
+                                    canMove = false;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (canMove) {
+                            selectedFurniture.setX(newX);
+                            selectedFurniture.setY(newY);
+                            dragStart = e.getPoint();
+                            repaint();
+                        }
+                    }
+                }
+            }
+        });
+    
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     handleRightClick(e);
+                } else if (SwingUtilities.isLeftMouseButton(e)) {
+                    // Store initial click point for potential room movement
+                    initialClick = e.getPoint();
+    
+                    // Check if furniture is clicked
+                    Point clickPoint = e.getPoint();
+                    for (Furniture furniture : room.getContainedFurniture()) {
+                        if (isFurnitureClicked(furniture, clickPoint)) {
+                            selectedFurniture = furniture;
+                            dragStart = clickPoint;
+                            return;
+                        }
+                    }
+                    selectedFurniture = null;
                 }
             }
-
+    
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    return; // Do nothing for right-click release
+                }
+                
+                if (selectedFurniture != null) {
+                    selectedFurniture = null;
+                    dragStart = null;
                     roomController.syncAdjacentRoomDoors(room);
                 }
             }
         });
     }
-
+    
     private void handleRightClick(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
+    
+        // First check furniture for right-click
+        for (Furniture furniture : room.getContainedFurniture()) {
+            if (furniture.containsPoint(x, y)) {
+                handleFurnitureClick(furniture);
+                return;
+            }
+        }
+    
+        // If no furniture, proceed with wall options
         int width = getWidth();
         int height = getHeight();
-
+    
         Wall clickedWall = null;
         int distanceFromStart = 0;
-
+    
         // Determine which wall was clicked and calculate distance from start
         if (y <= wallThickness) {
             clickedWall = room.northWall; // Top wall
@@ -82,22 +160,28 @@ public class RoomLabel extends ObjectLabel<Room> {
             clickedWall = room.eastWall; // Right wall
             distanceFromStart = y; // Vertical distance from top to bottom
         }
-
+    
         distanceFromStart = distanceFromStart / 25 * 25; // Round to nearest 25
-
+    
         if (clickedWall != null) {
             openWallOptionsDialog(clickedWall, distanceFromStart);
         }
-
-        // Check if any furniture is clicked
-        System.out.println("Clicked x:" + x + "y:" + y);
-        for (Furniture furniture : room.getContainedFurniture()) {
-            if (furniture.containsPoint(x, y)) {
-                handleFurnitureClick(furniture);
-            return;
-            }
-        }
     }
+    private boolean isWithinRoomBounds(double x, double y, Furniture furniture) {
+        return x >= 0 && 
+               y >= 0 && 
+               x + furniture.getLength() <= getWidth() &&
+               y + furniture.getWidth() <= getHeight();
+    }
+
+    private boolean isFurnitureClicked(Furniture furniture, Point clickPoint) {
+        return clickPoint.x >= furniture.getX() && 
+               clickPoint.x <= furniture.getX() + furniture.getLength() &&
+               clickPoint.y >= furniture.getY() && 
+               clickPoint.y <= furniture.getY() + furniture.getWidth();
+    }
+
+
 
     private void handleFurnitureClick(Furniture furniture) {
 

@@ -140,7 +140,7 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
     public Color getColor() {
         return color;
     }
-
+    
     public void setColor(Color color) {
         this.color = color;
         setBackground(color);
@@ -152,3 +152,5 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
     public abstract boolean isOverlappingAny();
 }
+
+

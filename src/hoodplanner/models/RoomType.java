@@ -3,10 +3,10 @@ package hoodplanner.models;
 import java.awt.Color;
 
 public enum RoomType {
+    LIVING_ROOM("Living Room", new Color(255, 140, 0)), // Orange
     BATHROOM("Bathroom", new Color(40, 40, 155)),
     BEDROOM("Bedroom", new Color(40, 155, 40)),
-    KITCHEN("Kitchen", new Color(130, 131, 40)),
-    LIVING_ROOM("Living Room", new Color(255, 140, 0)); // Orange
+    KITCHEN("Kitchen", new Color(130, 131, 40));
 
     private final String name;
     private final Color color;

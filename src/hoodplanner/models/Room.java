@@ -3,17 +3,31 @@ package hoodplanner.models;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Room extends FloorObject {
     private String name;
     private RoomType type;
     private final List<Furniture> containedFurniture; // List to store furniture
+    public Wall northWall;
+    public Wall southWall;
+    public Wall eastWall;
+    public Wall westWall;
 
     public Room(String name, double length, double width, double x, double y) {
         super(length, width, x, y);
         this.name = name;
         this.containedFurniture = new ArrayList<>();
+
+        this.northWall = new Wall(length, 0, x, y);
+        this.southWall = new Wall(length, 0, x, y + width);
+        this.eastWall = new Wall(0, width, x + length, y);
+        this.westWall = new Wall(0, width, x, y);
+    }
+
+    public List<Wall> getWalls() {
+        return Arrays.asList(northWall, southWall, eastWall, westWall);
     }
 
     public Room(String name, double length, double width) {
@@ -43,6 +57,7 @@ public class Room extends FloorObject {
     public String toString() {
         return name + (type != null ? " (" + type.toString() + ")" : "");
     }
+
 
     // Furniture Management
     public void addContainedObject(Furniture furniture) {
@@ -115,5 +130,43 @@ public class Room extends FloorObject {
 
     public Point getLocation() {
         return new Point((int) getX(), (int) getY());
+
+    @Override
+    public void setLength(double length) {
+        super.setLength(length);
+        northWall.setLength(length);
+        southWall.setLength(length);
+    }
+
+    @Override
+    public void setWidth(double width) {
+        super.setWidth(width);
+        eastWall.setWidth(width);
+        westWall.setWidth(width);
+    }
+
+    @Override
+    public void setX(double x) {
+        // System.out.println("Setting x to " + x);
+        super.setX(x);
+        updateWallPositions();
+    }
+
+    @Override
+    public void setY(double y) {
+        // System.out.println("Setting y to " + y);
+        super.setY(y);
+        updateWallPositions();
+    }
+
+    private void updateWallPositions() {
+        northWall.setX(getX());
+        northWall.setY(getY());
+        southWall.setX(getX());
+        southWall.setY(getY() + getWidth());
+        eastWall.setX(getX() + getLength());
+        eastWall.setY(getY());
+        westWall.setX(getX());
+        westWall.setY(getY());
     }
 }

@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
@@ -43,25 +44,27 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
                     int width = Math.round((float) size.width / SNAP_SIZE) * SNAP_SIZE;
                     int height = Math.round((float) size.height / SNAP_SIZE) * SNAP_SIZE;
 
-                    // Set snapped size
                     setPreferredSize(new Dimension(width, height));
                     setSize(width, height);
+
+                    if (isOverlappingAny()) {
+                        showOverlapDialog(true);
+                    }
 
                     resizing = false;
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 } else {
-                    // Snap to 50x50 grid when not resizing
                     int X = getLocation().x;
                     int Y = getLocation().y;
 
                     X = (X / SNAP_SIZE) * SNAP_SIZE;
                     Y = (Y / SNAP_SIZE) * SNAP_SIZE;
                     setLocation(X, Y);
-                }
 
-                // Save the position and size after a legal release
-                lastValidPosition = getLocation();
-                lastValidSize = getSize();
+                    if (isOverlappingAny()) {
+                        showOverlapDialog(false);
+                    }
+                }
             }
 
             @Override
@@ -93,28 +96,25 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
                     setPreferredSize(new Dimension(newWidth, newHeight));
                     setSize(newWidth, newHeight);
-
-                    // Check for overlap after resizing
-                    if (isOverlappingAny()) {
-                        System.out.println("Overlap detected during resize! Reverting to last valid size.");
-                        setSize(lastValidSize);
-                    } else {
-                        lastValidSize = getSize();
-                    }
-
                 } else {
                     move(e);
-
-                    // Check for overlap after moving
-                    if (isOverlappingAny()) {
-                        System.out.println("Overlap detected during move! Reverting to last valid position.");
-                        setLocation(lastValidPosition);
-                    } else {
-                        lastValidPosition = getLocation();
-                    }
                 }
             }
         });
+    }
+
+    private void showOverlapDialog(boolean wasResizing) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Object placement overlaps with another object. Please adjust.",
+                "Overlap Detected",
+                JOptionPane.WARNING_MESSAGE);
+
+        if (wasResizing) {
+            setSize(lastValidSize);
+        } else {
+            setLocation(lastValidPosition);
+        }
     }
 
     public abstract void move(MouseEvent e);
@@ -151,5 +151,4 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
     }
 
     public abstract boolean isOverlappingAny();
-
 }

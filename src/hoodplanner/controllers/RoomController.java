@@ -65,8 +65,9 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         addRoomAt(name, type, width, length, x, y, leftPanel, rightPanel);
     }
 
-    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel,
-            RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
+ 
+    public void addRoom(String name, RoomType type, double width, double length, LeftPanel leftPanel, RightPanel<Room, RoomLabel> rightPanel, Room referenceRoom, String position, String alignment) {
+
         double x = referenceRoom.getX();
         double y = referenceRoom.getY();
 
@@ -178,6 +179,8 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
             deleteObjectLabel(roomLabelToDelete, leftPanel);
         }
     }
+
+    
 
     // Helper method to check overlap with a spacing buffer
     private boolean isOverlapping(FloorObject existing, double x, double y, double width, double length,

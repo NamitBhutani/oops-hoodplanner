@@ -3,8 +3,8 @@ package hoodplanner.models;
 import java.io.Serializable;
 
 public class FloorObject implements Serializable {
-    private double length;
-    private double width;
+    protected double length;
+    protected double width;
     private double x;
     private double y;
 
@@ -15,6 +15,14 @@ public class FloorObject implements Serializable {
         this.y = y;
     }
 
+    public FloorObject() {
+        this.length = 0;
+        this.width = 0;
+        this.x = 0;
+        this.y = 0;
+    }
+
+    
     public double getLength() {
         return length;
     }
@@ -47,16 +55,6 @@ public class FloorObject implements Serializable {
         this.y = y;
     }
 
-    @Override
-    public String toString() {
-        return "FloorObject{" +
-                "length=" + length +
-                ", width=" + width +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
-    }
-
     public boolean checkOverlap(FloorObject other) {
         return this.x < other.x + other.length &&
                 this.x + this.length > other.x &&
@@ -64,9 +62,9 @@ public class FloorObject implements Serializable {
                 this.y + this.width > other.y;
     }
 
-    public boolean checkWithinBounds(FloorObject other) {
+    public boolean checkWithinBounds(FloorObject boundary) {
         return this.x >= 0 && this.y >= 0 &&
-                this.x + this.length <= other.length &&
-                this.y + this.width <= other.width;
+                this.x + this.length <= boundary.length &&
+                this.y + this.width <= boundary.width;
     }
 }

@@ -1,31 +1,54 @@
 package hoodplanner.models;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class Furniture extends FloorObject {
     private String name;
-    private String pngFileString;
-    private double rotation;
+    private String imagePath;
+    private Image image;
 
-    public Furniture(double length, double width, double x, double y, String name, String pngFileString) {
+    public Furniture(double length, double width, double x, double y, String name, String imagePath) {
         super(length, width, x, y);
         this.name = name;
-        this.pngFileString = pngFileString;
-        this.rotation = 0.0;
+        this.imagePath = imagePath;
+        this.image = loadImage(imagePath);
     }
 
-    public void rotate() {
-        this.rotation += 90.0;
+    public Furniture() {
+        super();
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void move(double x, double y) {
-        this.setX(x);
-        this.setY(y);
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+        this.image = loadImage(imagePath);
+    }
+
+    private Image loadImage(String path) {
+        // Load the image from the path and handle any issues
+        ImageIcon icon = new ImageIcon(path);
+        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+            System.out.println("Image loaded: " + path); // Debug message
+        } else {
+            System.out.println("Failed to load image: " + path); // Debug message
+        }
+        return icon.getImage();
+    }
+
+    public void draw(Graphics g, int x, int y) {
+        if (image != null) {
+            // Draw the furniture at the specified (x, y) location
+            g.drawImage(image, x, y, (int) getWidth(), (int) getLength(), null);
+        } else {
+            System.out.println("Image not available for: " + name); // Debug message
+        }
     }
 }

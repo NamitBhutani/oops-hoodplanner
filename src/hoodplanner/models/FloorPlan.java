@@ -36,7 +36,6 @@ public class FloorPlan implements Serializable {
     }
 
     public static FloorPlan loadFromFile(String filePath) throws IOException, ClassNotFoundException {
-        
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filePath))) {
             FloorPlan plan = (FloorPlan) ois.readObject();
             plan.saveFilePath = filePath;

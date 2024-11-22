@@ -2,14 +2,15 @@ package hoodplanner.ui;
 
 import hoodplanner.controllers.RoomController;
 import hoodplanner.models.FloorObject;
+import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
 import hoodplanner.models.RoomType;
-import java.awt.CardLayout;
-import java.awt.Color;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.util.ArrayList;
 
 public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends JPanel {
 
@@ -26,12 +27,17 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     private final JButton removeObjectButton;
     private final RoomController roomController;
 
+    private final ArrayList<Furniture> availableFurniture;
+    private final JPanel furnitureSelectionPanel;
+
     public RightPanel(LeftPanel leftPanel, RoomController roomController) {
         this.leftPanel = leftPanel;
         this.roomController = roomController;
+        this.availableFurniture = new ArrayList<>();
         cardLayout = new CardLayout();
         setLayout(cardLayout);
 
+        // Add Object Panel
         addObjectPanel = new JPanel();
         addObjectPanel.setLayout(null);
 
@@ -57,13 +63,11 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         addObjectPanel.add(roomTypeDropdown);
 
         roomTypeDropdown.addActionListener(e -> {
-            if (selectedObjectLabel != null) {
-                if (selectedObjectLabel.getObject() instanceof Room room) {
-                    RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
-                    room.setType(selectedType);
-                    selectedObjectLabel.setColor(selectedType.getColor());
-                    this.leftPanel.repaint();
-                }
+            if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
+                RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                room.setType(selectedType);
+                selectedObjectLabel.setColor(selectedType.getColor());
+                this.leftPanel.repaint();
             }
         });
 
@@ -74,21 +78,105 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         removeObjectButton.addActionListener(e -> {
             if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
                 Room room = (Room) selectedObjectLabel.getObject();
-                roomController.deleteRoom(room, leftPanel); // Call deleteRoom on roomController
-                selectedObjectLabel = null; // Clear selection
+                roomController.deleteRoom(room, leftPanel);
+                selectedObjectLabel = null;
                 positionLabel.setText("Position: ");
                 dimensionLabel.setText("Dimensions: ");
             }
         });
 
+        // Add Items Panel
         addItemPanel = new JPanel();
-        addItemPanel.setLayout(null);
-        JLabel addItemLabel = new JLabel("Add Items Panel");
-        addItemLabel.setBounds(10, 10, 300, 25);
-        addItemPanel.add(addItemLabel);
+        addItemPanel.setLayout(new BorderLayout());
+
+        JLabel addItemLabel = new JLabel("Available Furniture");
+        addItemLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        addItemPanel.add(addItemLabel, BorderLayout.NORTH);
+
+        furnitureSelectionPanel = new JPanel();
+        furnitureSelectionPanel.setLayout(new GridLayout(0, 2, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(furnitureSelectionPanel);
+        addItemPanel.add(scrollPane, BorderLayout.CENTER);
 
         add(addObjectPanel, "AddObject");
         add(addItemPanel, "AddItem");
+
+        // Load available furniture and update the panel
+        loadAvailableFurniture();
+        refreshFurnitureDisplay();
+    }
+
+    public void loadAvailableFurniture() {
+        availableFurniture.add(new Furniture(5, 5, 50.0, 90.0, "Sofa", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/sofa(1).png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 90.0, "Bed", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/bed.png"));
+        availableFurniture.add(new Furniture(5, 5, 50.0, 80.0, "Toilet", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/toilet.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Sink", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/sink.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Bath", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/bath.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Couch", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/couch.png"));
+    }
+
+    private void refreshFurnitureDisplay() {
+        furnitureSelectionPanel.removeAll();
+
+        for (Furniture furniture : availableFurniture) {
+            JPanel furnitureItemPanel = new JPanel(new BorderLayout());
+            furnitureItemPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            // Load furniture image
+            JLabel imageLabel = new JLabel();
+            try {
+                ImageIcon furnitureIcon = new ImageIcon(furniture.getImagePath());
+                Image scaledImage = furnitureIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                imageLabel.setIcon(new ImageIcon(scaledImage));
+            } catch (Exception e) {
+                imageLabel.setText("No Image");
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            }
+            furnitureItemPanel.add(imageLabel, BorderLayout.CENTER);
+
+            // Furniture name
+            JLabel furnitureName = new JLabel(furniture.getName());
+            furnitureName.setHorizontalAlignment(SwingConstants.CENTER);
+            furnitureName.setVerticalAlignment(SwingConstants.CENTER);
+            furnitureItemPanel.add(furnitureName, BorderLayout.SOUTH);
+
+            // Enable drag for furniture
+            furnitureItemPanel.setTransferHandler(new TransferHandler("furniture") {
+                @Override
+                public int getSourceActions(JComponent c) {
+                    return COPY;
+                }
+
+                @Override
+                protected Transferable createTransferable(JComponent c) {
+                    return new StringSelection(furniture.getName());
+                }
+            });
+
+            furnitureItemPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                    JComponent comp = (JComponent) evt.getSource();
+                    TransferHandler handler = comp.getTransferHandler();
+                    handler.exportAsDrag(comp, evt, TransferHandler.COPY);
+                }
+            });
+
+            furnitureSelectionPanel.add(furnitureItemPanel);
+        }
+
+        furnitureSelectionPanel.revalidate();
+        furnitureSelectionPanel.repaint();
+    }
+
+    public void addFurnitureToRoom(Furniture furniture) {
+        if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
+            room.addContainedObject(furniture);
+            JOptionPane.showMessageDialog(this, furniture.getName() + " added to " + room.getName());
+            leftPanel.repaint();
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a room before adding furniture.", "No Room Selected", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     public void showAddObjectView() {
@@ -101,34 +189,5 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
     public void setSelectedObjectLabel(L objectLabel) {
         selectedObjectLabel = objectLabel;
-        update(objectLabel);
-    }
-
-    private void update(L objectLabel) {
-        if (objectLabel == null) {
-            return;
-        }
-        T object = objectLabel.getObject();
-        double x = object.getX();
-        double y = object.getY();
-        double width = object.getWidth();
-        double length = object.getLength();
-
-        // Update the labels with the object's position and size
-        positionLabel.setText("Position: X = " + x + ", Y = " + y);
-        dimensionLabel.setText("Dimensions: Width = " + width + ", Length = " + length);
-
-        if (object instanceof Room room) {
-            objectName.setText("Details Panel: " + room.getName());
-            Color bgColor = objectLabel.getBackground();
-            for (RoomType type : RoomType.values()) {
-                if (bgColor.equals(type.getColor())) {
-                    roomTypeDropdown.setSelectedItem(type);
-                    break;
-                }
-            }
-        } else {
-            roomTypeDropdown.setEnabled(false);
-        }
     }
 }

@@ -88,6 +88,7 @@ public class LeftPanel extends JPanel implements DropTargetListener {
                     Point relativeLocation = convertToRoomCoordinates(dropLocation, targetRoom);
 
                     Furniture furniture = createFurnitureByName(furnitureName, relativeLocation);
+                    // System.out.println("Furniture: " + furniture);
                     if (furniture != null) {
                         targetRoom.addContainedObject(furniture);
                         JOptionPane.showMessageDialog(this,
@@ -144,5 +145,9 @@ public class LeftPanel extends JPanel implements DropTargetListener {
         availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Sink", "src/hoodplanner/public/sink.png"));
         availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Bath", "src/hoodplanner/public/bath.png"));
         availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Couch", "src/hoodplanner/public/couch.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Table", "src/hoodplanner/public/table.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Armchair", "src/hoodplanner/public/armchair.png"));
+                
+
     }
 }

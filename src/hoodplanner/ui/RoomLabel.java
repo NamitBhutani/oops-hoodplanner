@@ -11,7 +11,6 @@ import hoodplanner.models.Wall;
 import hoodplanner.models.Window;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -336,6 +335,14 @@ public class RoomLabel extends ObjectLabel<Room> {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Draw furniture in the room
+
+        System.out.println("Furnitures" + room.getContainedFurniture().size());
+        for (Furniture furniture : room.getContainedFurniture()) {
+            // Use the draw method to render the furniture image
+            furniture.draw(g, (int) furniture.getX(), (int) furniture.getY(), this);
+        }
+
         // Draw walls
         g.setColor(Color.WHITE); // Wall color
         int width = getWidth();
@@ -360,16 +367,7 @@ public class RoomLabel extends ObjectLabel<Room> {
                 "vertical");
 
 
-        // draw furniture 
-                // Draw furniture in the room
 
-        Rectangle bounds = getBounds();
-        System.out.println("Furnitures" + room.getContainedFurniture().size());
-        for (Furniture furniture : room.getContainedFurniture()) {
-            // Use the draw method to render the furniture image
-            System.out.println("Drawing furniture: " + furniture.getName() + "at x:" + bounds.x + "fx: " + (int) furniture.getX() + " y:"  + bounds.y  + "fy: " + (int) furniture.getY()); // Debug message
-            furniture.draw(g, (int) furniture.getX(), (int) furniture.getY(), this);
-        }
 
     }
 

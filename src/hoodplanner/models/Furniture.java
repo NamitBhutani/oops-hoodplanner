@@ -51,10 +51,10 @@ public class Furniture extends FloorObject {
     public void draw(Graphics g, int x, int y, JLabel label) {
         if (image != null) {
             // Draw the furniture at the specified (x, y) location
-            System.out.println("Drawing furniture: " + name + " at x: " + x + " y: " + y); // Debug message
+            // System.out.println("Drawing furniture: " + name + " at x: " + x + " y: " + y); // Debug message
             // Image img = this.image.getScaledInstance(100, 100, Image.SCALE_SMOOTH);'
-            System.out.println("Image: " + scaledImage + " Loss " + image); // Debug message
-            System.out.println(g.drawImage(scaledImage, x, y, label));
+            // System.out.println("Image: " + scaledImage + " Loss " + image); // Debug message
+            g.drawImage(scaledImage, x, y, label);
         } else {
             System.out.println("Image not available for: " + name); // Debug message
         }

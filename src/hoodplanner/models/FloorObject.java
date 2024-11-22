@@ -67,4 +67,9 @@ public class FloorObject implements Serializable {
                 this.x + this.length <= boundary.length &&
                 this.y + this.width <= boundary.width;
     }
+
+    public boolean containsPoint(int x, int y) {
+        System.out.println("x:" + this.x + " y:" + this.y + " length:" + this.length + " width:" + this.width);
+        return x >= this.x && x <= this.x + this.length && y >= this.y && y <= this.y + this.width;
+    }
 }

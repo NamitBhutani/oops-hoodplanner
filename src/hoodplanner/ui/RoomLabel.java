@@ -88,6 +88,31 @@ public class RoomLabel extends ObjectLabel<Room> {
         if (clickedWall != null) {
             openWallOptionsDialog(clickedWall, distanceFromStart);
         }
+
+        // Check if any furniture is clicked
+        System.out.println("Clicked x:" + x + "y:" + y);
+        for (Furniture furniture : room.getContainedFurniture()) {
+            if (furniture.containsPoint(x, y)) {
+                handleFurnitureClick(furniture, e);
+            return;
+            }
+        }
+    }
+
+    private void handleFurnitureClick(Furniture furniture, MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            // Show a dialog to remove the furniture
+            int choice = JOptionPane.showConfirmDialog(
+                    this,
+                    "Do you want to remove this furniture?",
+                    "Remove Furniture",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (choice == JOptionPane.YES_OPTION) {
+                room.removeContainedObject(furniture);
+                roomController.repaintRooms();
+            }
+        }
     }
 
     // private void openWallOptionsDialog(Wall wall, int distanceFromStart) {

@@ -5,12 +5,11 @@ import hoodplanner.models.FloorObject;
 import hoodplanner.models.Furniture;
 import hoodplanner.models.Room;
 import hoodplanner.models.RoomType;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import javax.swing.*;
 
 public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends JPanel {
 
@@ -107,12 +106,12 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     }
 
     public void loadAvailableFurniture() {
-        availableFurniture.add(new Furniture(5, 5, 50.0, 90.0, "Sofa", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/sofa(1).png"));
-        availableFurniture.add(new Furniture(5, 5, 60.0, 90.0, "Bed", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/bed.png"));
-        availableFurniture.add(new Furniture(5, 5, 50.0, 80.0, "Toilet", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/toilet.png"));
-        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Sink", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/sink.png"));
-        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Bath", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/bath.png"));
-        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Couch", "/home/ayushr17/Documents/GitHub/oops-hoodplanner/src/hoodplanner/public/couch.png"));
+        availableFurniture.add(new Furniture(5, 5, 50.0, 90.0, "Sofa", "src/hoodplanner/public/sofa(1).png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 90.0, "Bed", "src/hoodplanner/public/bed.png"));
+        availableFurniture.add(new Furniture(5, 5, 50.0, 80.0, "Toilet", "src/hoodplanner/public/toilet.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Sink", "src/hoodplanner/public/sink.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Bath", "src/hoodplanner/public/bath.png"));
+        availableFurniture.add(new Furniture(5, 5, 60.0, 80.0, "Couch", "src/hoodplanner/public/couch.png"));
     }
 
     private void refreshFurnitureDisplay() {

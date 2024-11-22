@@ -1,10 +1,10 @@
 package hoodplanner.models;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.*;
 
 public class Room extends FloorObject {
     private String name;
@@ -131,6 +131,8 @@ public class Room extends FloorObject {
     public Point getLocation() {
         return new Point((int) getX(), (int) getY());
 
+    }
+    
     @Override
     public void setLength(double length) {
         super.setLength(length);

@@ -1,6 +1,7 @@
 package hoodplanner.models;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import javax.swing.*;
@@ -10,6 +11,7 @@ public class Furniture extends FloorObject {
     private String imagePath;
     private transient Image image;         // Exclude from serialization
     private transient Image scaledImage;   // Exclude from serialization
+    private int rotation = 0;
 
     public Furniture(double length, double width, double x, double y, String name, String imagePath) {
         super(length, width, x, y);
@@ -17,6 +19,17 @@ public class Furniture extends FloorObject {
         this.imagePath = imagePath;
         this.image = loadImage(imagePath);
         this.scaledImage = createScaledImage(this.image);
+    }
+
+    private Image rotateImage(Image img, int angle) {
+        int w = img.getWidth(null);
+        int h = img.getHeight(null);
+        BufferedImage rotated = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = rotated.createGraphics();
+        g2d.rotate(Math.toRadians(angle), w / 2, h / 2);
+        g2d.drawImage(img, 0, 0, null);
+        g2d.dispose();
+        return rotated;
     }
 
     public Furniture() {
@@ -70,6 +83,12 @@ public class Furniture extends FloorObject {
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject(); // Deserialize non-transient fields
         this.image = loadImage(this.imagePath);
-        this.scaledImage = createScaledImage(this.image);
+        this.scaledImage = createScaledImage(rotateImage(this.image, this.rotation));
+    }
+
+    public void rotate() {
+        // Rotate the furniture by 90 degrees
+        this.rotation = (this.rotation + 90) % 360;
+        this.scaledImage = createScaledImage(rotateImage(this.image, this.rotation));
     }
 }

@@ -93,25 +93,32 @@ public class RoomLabel extends ObjectLabel<Room> {
         System.out.println("Clicked x:" + x + "y:" + y);
         for (Furniture furniture : room.getContainedFurniture()) {
             if (furniture.containsPoint(x, y)) {
-                handleFurnitureClick(furniture, e);
+                handleFurnitureClick(furniture);
             return;
             }
         }
     }
 
-    private void handleFurnitureClick(Furniture furniture, MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
-            // Show a dialog to remove the furniture
-            int choice = JOptionPane.showConfirmDialog(
-                    this,
-                    "Do you want to remove this furniture?",
-                    "Remove Furniture",
-                    JOptionPane.YES_NO_OPTION);
+    private void handleFurnitureClick(Furniture furniture) {
 
-            if (choice == JOptionPane.YES_OPTION) {
-                room.removeContainedObject(furniture);
-                roomController.repaintRooms();
-            }
+        // Show a dialog with options to remove or rotate the furniture
+        String[] options = { "Remove Furniture", "Rotate Furniture" };
+        int choice = JOptionPane.showOptionDialog(
+            this,
+            "Select an option:",
+            "Furniture Options",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            options,
+            options[0]);
+
+        if (choice == 0) {
+            room.removeContainedObject(furniture);
+            roomController.repaintRooms();
+        } else if (choice == 1) {
+            furniture.rotate();
+            roomController.repaintRooms();
         }
     }
 

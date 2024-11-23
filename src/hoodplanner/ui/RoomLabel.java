@@ -328,13 +328,48 @@ public class RoomLabel extends ObjectLabel<Room> {
             JOptionPane.showMessageDialog(this, "Windows cannot be added to adjacent walls.");
             return;
         }
+
         // Show input dialog for window length
         int maxLength = wall.size();
 
-        Integer[] fittableLengths = new Integer[maxLength / 25];
-        for (int i = 0; i < maxLength / 25; i++) {
-            fittableLengths[i] = (i + 1) * 25;
+        // Calculate maximum possible length at this position
+        int remainingLength = maxLength - distanceFromStart;
+        if (remainingLength <= 0) {
+            JOptionPane.showMessageDialog(this, "No space available at this position for a window.");
+            return;
         }
+
+        List<Integer> availableLengths = new ArrayList<>();
+
+        // Calculate available lengths that won't cause overlap
+        for (int length = 25; length <= Math.min(remainingLength, maxLength); length += 25) {
+            boolean overlaps = false;
+
+            // Check for overlap with existing windows
+            for (Window existingWindow : wall.getWindows()) {
+                int newWindowStart = distanceFromStart;
+                int newWindowEnd = distanceFromStart + length;
+                int existingWindowStart = existingWindow.getDistanceFromStart();
+                int existingWindowEnd = existingWindowStart + existingWindow.getLength();
+
+                // Check if the new window would overlap with existing window
+                if (!(newWindowEnd <= existingWindowStart || newWindowStart >= existingWindowEnd)) {
+                    overlaps = true;
+                    break;
+                }
+            }
+
+            if (!overlaps) {
+                availableLengths.add(length);
+            }
+        }
+
+        if (availableLengths.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No available space for a window at this position.");
+            return;
+        }
+
+        Integer[] fittableLengths = availableLengths.toArray(new Integer[0]);
 
         Integer lengthStr = (Integer) JOptionPane.showInputDialog(
                 this,
@@ -347,16 +382,15 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         if (lengthStr == null) {
             System.err.println("User canceled the dialog");
-            return; // User canceled the dialog
+            return;
         }
 
         try {
             int length = lengthStr;
             Window window = new Window(length, distanceFromStart);
-
-            wall.addWindow(window); // Add the window to the selected wall
+            wall.addWindow(window);
             roomController.syncAdjacentRoomDoors(this.room);
-            repaint(); // Repaint to show the added window
+            repaint();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
         }

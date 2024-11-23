@@ -49,6 +49,8 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
                     if (isOverlappingAny()) {
                         showOverlapDialog(true);
+                    } else {
+                        lastValidSize = getSize();
                     }
 
                     resizing = false;
@@ -63,6 +65,8 @@ public abstract class ObjectLabel<T extends FloorObject> extends JLabel {
 
                     if (isOverlappingAny()) {
                         showOverlapDialog(false);
+                    } else {
+                        lastValidPosition = getLocation();
                     }
                 }
             }

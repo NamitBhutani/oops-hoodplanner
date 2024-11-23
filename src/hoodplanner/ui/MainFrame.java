@@ -64,7 +64,8 @@ public class MainFrame extends JFrame {
                     leftPanel.repaint();
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Failed to load floor plan", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Failed to load floor plan", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -72,24 +73,24 @@ public class MainFrame extends JFrame {
         menuBar.getItem("Save As").addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileFilter(new FileNameExtensionFilter("Hood Files (*.hood)", "hood"));
-        
+
             int returnValue = fileChooser.showSaveDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 String filePath = fileChooser.getSelectedFile().getPath();
                 if (!filePath.endsWith(".hood")) {
                     filePath += ".hood"; // Automatically append the .hood extension
                 }
-        
+
                 try {
                     floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
                     setTitle(floorPlan.displayName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
 
         menuBar.getItem("Save").addActionListener(e -> {
             if (floorPlan.saveFilePath == null) {
@@ -100,7 +101,8 @@ public class MainFrame extends JFrame {
                     setTitle(floorPlan.displayName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Failed to save floor plan", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -139,7 +141,10 @@ public class MainFrame extends JFrame {
         }
         leftPanel.revalidate();
         leftPanel.repaint();
-        RightPanel<Room, RoomLabel> rightPanel = new RightPanel<>(leftPanel, roomController);
-        rightPanel.loadAvailableFurniture();
+        // RightPanel<Room, RoomLabel> rightPanel = new RightPanel<>(leftPanel,
+        // roomController);
+        // rightPanel.loadAvailableFurniture();
+        this.rightPanel.setController(roomController);
+        this.rightPanel.loadAvailableFurniture();
     }
 }

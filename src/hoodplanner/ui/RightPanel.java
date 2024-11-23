@@ -24,7 +24,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
     private final JPanel addItemPanel;
     private final CardLayout cardLayout;
     private final JButton removeObjectButton;
-    private final RoomController roomController;
+    private RoomController roomController;
 
     private final ArrayList<Furniture> availableFurniture;
     private final JPanel furnitureSelectionPanel;
@@ -39,37 +39,37 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         addObjectPanel = new JPanel();
         addObjectPanel.setLayout(new BoxLayout(addObjectPanel, BoxLayout.Y_AXIS));
         addObjectPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Header
         objectName = new JLabel("Details Panel");
         objectName.setFont(objectName.getFont().deriveFont(Font.BOLD, 16f));
         objectName.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(objectName);
         addObjectPanel.add(Box.createVerticalStrut(20));
-        
+
         // Position and Dimensions
         positionLabel = new JLabel("Position: ");
         positionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(positionLabel);
         addObjectPanel.add(Box.createVerticalStrut(10));
-        
+
         dimensionLabel = new JLabel("Dimensions: ");
         dimensionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(dimensionLabel);
         addObjectPanel.add(Box.createVerticalStrut(20));
-        
+
         // Room type selection
         JLabel typeLabel = new JLabel("Select Room Type:");
         typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(typeLabel);
         addObjectPanel.add(Box.createVerticalStrut(5));
-        
+
         roomTypeDropdown = new JComboBox<>(RoomType.values());
         roomTypeDropdown.setMaximumSize(new Dimension(200, 25));
         roomTypeDropdown.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(roomTypeDropdown);
         addObjectPanel.add(Box.createVerticalStrut(20));
-        
+
         // Remove button
         removeObjectButton = new JButton("Remove Room");
         removeObjectButton.setMaximumSize(new Dimension(200, 30));
@@ -78,7 +78,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         removeObjectButton.setFocusPainted(false);
         removeObjectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         addObjectPanel.add(removeObjectButton);
-        
+
         // Your existing action listeners can remain the same
         roomTypeDropdown.addActionListener(e -> {
             if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
@@ -88,7 +88,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
                 leftPanel.repaint();
             }
         });
-        
+
         removeObjectButton.addActionListener(e -> {
             if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
                 Room room = (Room) selectedObjectLabel.getObject();
@@ -130,7 +130,7 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Couch", "src/hoodplanner/public/couch.png"));
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Table", "src/hoodplanner/public/table.png"));
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Armchair", "src/hoodplanner/public/armchair.png"));
-                
+
     }
 
     private void refreshFurnitureDisplay() {
@@ -194,7 +194,8 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
             roomController.repaintRooms();
             leftPanel.repaint();
         } else {
-            JOptionPane.showMessageDialog(this, "Please select a room before adding furniture.", "No Room Selected", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a room before adding furniture.", "No Room Selected",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -259,5 +260,41 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
     public L getSelectedObjectLabel() {
         return selectedObjectLabel;
+    }
+
+    public void setController(RoomController newController) {
+        this.roomController = newController;
+        selectedObjectLabel = null;
+
+        objectName.setText("Details Panel");
+        positionLabel.setText("Position: ");
+        dimensionLabel.setText("Dimensions: ");
+
+        roomTypeDropdown.setSelectedIndex(0);
+
+        removeObjectButton.removeActionListener(removeObjectButton.getActionListeners()[0]);
+        removeObjectButton.addActionListener(e -> {
+            if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
+                Room room = (Room) selectedObjectLabel.getObject();
+                roomController.deleteRoom(room, leftPanel);
+                selectedObjectLabel = null;
+                positionLabel.setText("Position: ");
+                dimensionLabel.setText("Dimensions: ");
+            }
+        });
+
+        roomTypeDropdown.removeActionListener(roomTypeDropdown.getActionListeners()[0]);
+        roomTypeDropdown.addActionListener(e -> {
+            if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room room) {
+                RoomType selectedType = (RoomType) roomTypeDropdown.getSelectedItem();
+                room.setType(selectedType);
+                selectedObjectLabel.setColor(selectedType.getColor());
+                leftPanel.repaint();
+            }
+        });
+        showAddObjectView();
+
+        revalidate();
+        repaint();
     }
 }

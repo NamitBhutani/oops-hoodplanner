@@ -8,6 +8,7 @@ import hoodplanner.models.RoomType;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -299,5 +300,23 @@ public class RightPanel<T extends FloorObject, L extends ObjectLabel<T>> extends
 
         revalidate();
         repaint();
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("DELETE"), "deleteRoom");
+        getActionMap().put("deleteRoom", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (selectedObjectLabel != null && selectedObjectLabel.getObject() instanceof Room) {
+                    Room room = (Room) selectedObjectLabel.getObject();
+                    roomController.deleteRoom(room, leftPanel);
+                    selectedObjectLabel = null;
+                    positionLabel.setText("Position: ");
+                    dimensionLabel.setText("Dimensions: ");
+                }
+            }
+        });
     }
 }

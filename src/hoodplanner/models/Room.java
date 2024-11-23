@@ -58,19 +58,18 @@ public class Room extends FloorObject {
         return name + (type != null ? " (" + type.toString() + ")" : "");
     }
 
-
     // Furniture Management
-    public void addContainedObject(Furniture furniture) {
-        if (furniture != null) {
-            // Ensure furniture does not overlap with existing furniture in the room
-            for (Furniture existingFurniture : containedFurniture) {
-                if (furnitureOverlaps(existingFurniture, furniture)) {
-                    System.out.println("Cannot add furniture: " + furniture.getName() + " because it overlaps with " + existingFurniture.getName());
-                    return; // Exit if overlap detected
-                }
-            }
-            containedFurniture.add(furniture);
+    public boolean addContainedObject(Furniture furniture) {
+        if (furniture == null) {
+            return false;
         }
+        for (Furniture existingFurniture : containedFurniture) {
+            if (furnitureOverlaps(existingFurniture, furniture)) {
+                return false;
+            }
+        }
+        containedFurniture.add(furniture);
+        return true;
     }
 
     public void removeContainedObject(Furniture furniture) {
@@ -102,19 +101,19 @@ public class Room extends FloorObject {
 
     // Helper method to check overlap based on coordinates and size
     private boolean furnitureOverlaps(Furniture existingFurniture, Furniture newFurniture) {
-        // Check if the new furniture overlaps with the existing furniture based on their positions and sizes
+        // Check if the new furniture overlaps with the existing furniture based on
+        // their positions and sizes
         return !(newFurniture.getX() + newFurniture.getWidth() <= existingFurniture.getX() ||
-                 newFurniture.getX() >= existingFurniture.getX() + existingFurniture.getWidth() ||
-                 newFurniture.getY() + newFurniture.getLength() <= existingFurniture.getY() ||
-                 newFurniture.getY() >= existingFurniture.getY() + existingFurniture.getLength());
+                newFurniture.getX() >= existingFurniture.getX() + existingFurniture.getWidth() ||
+                newFurniture.getY() + newFurniture.getLength() <= existingFurniture.getY() ||
+                newFurniture.getY() >= existingFurniture.getY() + existingFurniture.getLength());
     }
-
 
     public Point getLocation() {
         return new Point((int) getX(), (int) getY());
 
     }
-    
+
     @Override
     public void setLength(double length) {
         super.setLength(length);

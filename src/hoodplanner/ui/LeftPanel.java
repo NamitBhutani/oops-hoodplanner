@@ -15,7 +15,7 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     public LeftPanel() {
         setLayout(null);
         JPanel gridOverlay = new GridOverlayPanel();
-        gridOverlay.setOpaque(false);  // Ensure overlay is transparent
+        gridOverlay.setOpaque(false); // Ensure overlay is transparent
         add(gridOverlay);
         setBackground(Color.DARK_GRAY);
 
@@ -30,17 +30,15 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     public void reset() {
         removeAll();
         JPanel gridOverlay = new GridOverlayPanel();
-        gridOverlay.setOpaque(false);  // Ensure overlay is transparent
+        gridOverlay.setOpaque(false); // Ensure overlay is transparent
         add(gridOverlay);
         revalidate();
         repaint();
     }
 
-
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
         Point location = dtde.getLocation();
-
 
         targetRoom = findRoomAtLocation(location);
         if (targetRoom != null) {
@@ -67,7 +65,8 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     }
 
     @Override
-    public void dropActionChanged(DropTargetDragEvent dtde) {}
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+    }
 
     @Override
     public void dragExit(DropTargetEvent dte) {
@@ -95,11 +94,15 @@ public class LeftPanel extends JPanel implements DropTargetListener {
                     Furniture furniture = createFurnitureByName(furnitureName, relativeLocation);
                     // System.out.println("Furniture: " + furniture);
                     if (furniture != null) {
-                        room.addContainedObject(furniture);
-                        targetRoom.setHighlight(false);
-                        repaint();
-                        JOptionPane.showMessageDialog(this,
-                        furniture.getName() + " added to " + room.getName());
+                        boolean result = room.addContainedObject(furniture);
+                        if (!result) {
+                            JOptionPane.showMessageDialog(this, "Furniture overlaps with existing furniture");
+                        } else {
+                            targetRoom.setHighlight(false);
+                            repaint();
+                            JOptionPane.showMessageDialog(this,
+                                    furniture.getName() + " added to " + room.getName());
+                        }
                     }
 
                 } else {
@@ -134,10 +137,12 @@ public class LeftPanel extends JPanel implements DropTargetListener {
     }
 
     private Furniture createFurnitureByName(String name, Point location) {
-        // Match the name to the available furniture and return the corresponding Furniture object
+        // Match the name to the available furniture and return the corresponding
+        // Furniture object
         for (Furniture f : availableFurniture) {
             if (f.getName().equalsIgnoreCase(name)) {
-                return new Furniture(f.getWidth(), f.getLength(), location.x, location.y, f.getName(), f.getImagePath());
+                return new Furniture(f.getWidth(), f.getLength(), location.x, location.y, f.getName(),
+                        f.getImagePath());
             }
         }
         return null;
@@ -153,7 +158,6 @@ public class LeftPanel extends JPanel implements DropTargetListener {
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Couch", "src/hoodplanner/public/couch.png"));
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Table", "src/hoodplanner/public/table.png"));
         availableFurniture.add(new Furniture(100, 100, 60.0, 80.0, "Armchair", "src/hoodplanner/public/armchair.png"));
-                
 
     }
 }

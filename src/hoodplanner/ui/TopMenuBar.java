@@ -24,7 +24,7 @@ public class TopMenuBar extends JMenuBar {
         add(addMenu);
 
         JMenuItem addRoomItem = new JMenuItem("Add Room");
-        JMenuItem addItemItem = new JMenuItem("Add Items");
+        JMenuItem addItemItem = new JMenuItem("Add Fixtures/Furniture");
         JMenuItem saveItem = new JMenuItem("Save");
         JMenuItem saveAsItem = new JMenuItem("Save As");
         JMenuItem loadItem = new JMenuItem("Load");

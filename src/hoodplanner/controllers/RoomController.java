@@ -187,9 +187,9 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
             double spacing) {
         double buffer = spacing / 2.0;
         return !(x + width + buffer <= existing.getX() ||
-                x >= existing.getX() + existing.getWidth() + buffer ||
+                x >= existing.getX() + existing.getLength() + buffer ||
                 y + length + buffer <= existing.getY() ||
-                y >= existing.getY() + existing.getLength() + buffer);
+                y >= existing.getY() + existing.getWidth() + buffer);
     }
 
     public void syncAdjacentRoomDoors(Room room1) {

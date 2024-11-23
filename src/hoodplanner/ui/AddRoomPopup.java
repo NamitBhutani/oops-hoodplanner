@@ -107,7 +107,9 @@ public class AddRoomPopup {
         });
 
         dialog.add(mainPanel, BorderLayout.NORTH);
-        dialog.add(moreDetailsButton, BorderLayout.WEST);
+        if (!roomController.getRooms().isEmpty()) {
+            dialog.add(moreDetailsButton, BorderLayout.WEST);
+        }
         dialog.add(moreDetailsPanel, BorderLayout.CENTER);
         dialog.add(submitButton, BorderLayout.SOUTH);
 

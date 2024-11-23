@@ -515,7 +515,13 @@ public class RoomLabel extends ObjectLabel<Room> {
         System.out.println("Highlighting room: " + highlight);
         if (highlight) {
             Color originalColor = room.getType().getColor();
-            Color highlightColor = originalColor.brighter();
+            int darker = Math.max(originalColor.getAlpha() - 50, 0); // Reduce alpha, ensuring it doesn't go below 0
+            Color highlightColor = new Color(
+                Math.min(originalColor.getRed() + 25, 255),
+                Math.min(originalColor.getGreen() + 25, 255),
+                Math.min(originalColor.getBlue() + 25, 255),
+                originalColor.getAlpha()
+            );
             setBackground(highlightColor);
             // setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border
             // for highlight

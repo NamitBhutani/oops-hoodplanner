@@ -82,7 +82,7 @@ public class MainFrame extends JFrame {
                 }
 
                 try {
-                    floorPlan.saveToFile(fileChooser.getSelectedFile().getPath());
+                    floorPlan.saveToFile(filePath);
                     setTitle(floorPlan.displayName());
                 } catch (IOException ex) {
                     ex.printStackTrace();

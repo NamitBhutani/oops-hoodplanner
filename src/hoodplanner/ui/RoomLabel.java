@@ -19,14 +19,12 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-
 public class RoomLabel extends ObjectLabel<Room> {
 
     private final Room room;
     private final RoomController roomController;
     private boolean isHighlighted = false; // Track if the room is highlighted
     private final int wallThickness = 4; // Adjust thickness as needed
-
 
     public RoomLabel(Room room, RoomController roomController) {
         super(room);
@@ -53,6 +51,8 @@ public class RoomLabel extends ObjectLabel<Room> {
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     roomController.syncAdjacentRoomDoors(room);
+                    checkAndRemoveAdjacentWindows();
+                    getParent().repaint();
                 }
             }
         });
@@ -93,7 +93,7 @@ public class RoomLabel extends ObjectLabel<Room> {
         for (Furniture furniture : room.getContainedFurniture()) {
             if (furniture.containsPoint(x, y)) {
                 handleFurnitureClick(furniture);
-            return;
+                return;
             }
         }
     }
@@ -103,14 +103,14 @@ public class RoomLabel extends ObjectLabel<Room> {
         // Show a dialog with options to remove or rotate the furniture
         String[] options = { "Remove Furniture", "Rotate Furniture" };
         int choice = JOptionPane.showOptionDialog(
-            this,
-            "Select an option:",
-            "Furniture Options",
-            JOptionPane.DEFAULT_OPTION,
-            JOptionPane.PLAIN_MESSAGE,
-            null,
-            options,
-            options[0]);
+                this,
+                "Select an option:",
+                "Furniture Options",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                options[0]);
 
         if (choice == 0) {
             room.removeContainedObject(furniture);
@@ -328,13 +328,48 @@ public class RoomLabel extends ObjectLabel<Room> {
             JOptionPane.showMessageDialog(this, "Windows cannot be added to adjacent walls.");
             return;
         }
+
         // Show input dialog for window length
         int maxLength = wall.size();
 
-        Integer[] fittableLengths = new Integer[maxLength / 25];
-        for (int i = 0; i < maxLength / 25; i++) {
-            fittableLengths[i] = (i + 1) * 25;
+        // Calculate maximum possible length at this position
+        int remainingLength = maxLength - distanceFromStart;
+        if (remainingLength <= 0) {
+            JOptionPane.showMessageDialog(this, "No space available at this position for a window.");
+            return;
         }
+
+        List<Integer> availableLengths = new ArrayList<>();
+
+        // Calculate available lengths that won't cause overlap
+        for (int length = 25; length <= Math.min(remainingLength, maxLength); length += 25) {
+            boolean overlaps = false;
+
+            // Check for overlap with existing windows
+            for (Window existingWindow : wall.getWindows()) {
+                int newWindowStart = distanceFromStart;
+                int newWindowEnd = distanceFromStart + length;
+                int existingWindowStart = existingWindow.getDistanceFromStart();
+                int existingWindowEnd = existingWindowStart + existingWindow.getLength();
+
+                // Check if the new window would overlap with existing window
+                if (!(newWindowEnd <= existingWindowStart || newWindowStart >= existingWindowEnd)) {
+                    overlaps = true;
+                    break;
+                }
+            }
+
+            if (!overlaps) {
+                availableLengths.add(length);
+            }
+        }
+
+        if (availableLengths.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No available space for a window at this position.");
+            return;
+        }
+
+        Integer[] fittableLengths = availableLengths.toArray(new Integer[0]);
 
         Integer lengthStr = (Integer) JOptionPane.showInputDialog(
                 this,
@@ -347,16 +382,15 @@ public class RoomLabel extends ObjectLabel<Room> {
 
         if (lengthStr == null) {
             System.err.println("User canceled the dialog");
-            return; // User canceled the dialog
+            return;
         }
 
         try {
             int length = lengthStr;
             Window window = new Window(length, distanceFromStart);
-
-            wall.addWindow(window); // Add the window to the selected wall
+            wall.addWindow(window);
             roomController.syncAdjacentRoomDoors(this.room);
-            repaint(); // Repaint to show the added window
+            repaint();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input for length.");
         }
@@ -395,9 +429,6 @@ public class RoomLabel extends ObjectLabel<Room> {
         drawWallWithDoorsAndWindows(g, room.westWall, 0, 0, height, wallThickness, hasLeftNeighbor, "vertical");
         drawWallWithDoorsAndWindows(g, room.eastWall, width - wallThickness, 0, height, wallThickness, hasRightNeighbor,
                 "vertical");
-
-
-
 
     }
 
@@ -492,7 +523,8 @@ public class RoomLabel extends ObjectLabel<Room> {
                 originalColor.getAlpha()
             );
             setBackground(highlightColor);
-            // setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border for highlight
+            // setBorder(BorderFactory.createLineBorder(Color.RED, 3)); // Set a red border
+            // for highlight
         } else {
             setBackground(room.getType().getColor()); // Reset to the room's original color
         }
@@ -513,8 +545,8 @@ public class RoomLabel extends ObjectLabel<Room> {
         setLocation(X, Y);
         room.setX(X);
         room.setY(Y);
-        checkAndRemoveAdjacentWindows();
-        getParent().repaint();
+        // checkAndRemoveAdjacentWindows();
+        // getParent().repaint();
     }
 
     private void checkAndRemoveAdjacentWindows() {
@@ -527,6 +559,7 @@ public class RoomLabel extends ObjectLabel<Room> {
                 for (Wall otherWall : otherRoom.getWalls()) {
                     for (Wall wall : room.getWalls()) {
                         if (roomController.areWallsAdjacent(wall, otherWall)) {
+                            System.out.println("Removing windows from adjacent walls");
                             removeWindowsFromAdjacentWalls(wall, otherWall);
                             removeWindowsFromAdjacentWalls(otherWall, wall);
                         }
@@ -551,7 +584,6 @@ public class RoomLabel extends ObjectLabel<Room> {
     public boolean isOverlappingAny() {
         return roomController.isOverlappingAny(this);
     }
-
 
     public Room getRoom() {
         return room;

@@ -187,9 +187,9 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
             double spacing) {
         double buffer = spacing / 2.0;
         return !(x + width + buffer <= existing.getX() ||
-                x >= existing.getX() + existing.getWidth() + buffer ||
+                x >= existing.getX() + existing.getLength() + buffer ||
                 y + length + buffer <= existing.getY() ||
-                y >= existing.getY() + existing.getLength() + buffer);
+                y >= existing.getY() + existing.getWidth() + buffer);
     }
 
     public void syncAdjacentRoomDoors(Room room1) {
@@ -327,17 +327,21 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         for (Door door : wall1.getDoors()) {
 
             // Create a new door on wall2 with mirrored position
-            Door mirroredDoor = new Door(
-                    door.getLength(),
-                    calculateMirroredPosition(wall1, wall2, door));
+            int pos = calculateMirroredPosition(wall1, wall2, door);
+            if (pos == -1) {
+                continue;
+            }
+            Door mirroredDoor = new Door(door.getLength(), pos);
             System.out.println("Mirrored door position on wall2: " + mirroredDoor.getDistanceFromStart());
             wall2.addDoor(mirroredDoor);
         }
 
         for (Door door : wall2.getDoors()) {
-            Door mirroredDoor = new Door(
-                    door.getLength(),
-                    calculateMirroredPosition(wall2, wall1, door));
+            int pos = calculateMirroredPosition(wall2, wall1, door);
+            if (pos == -1) {
+                continue;
+            }
+            Door mirroredDoor = new Door(door.getLength(),pos);
             System.out.println("Mirrored door position on wall1: " + mirroredDoor.getDistanceFromStart());
             wall1.addDoor(mirroredDoor);
         }
@@ -352,7 +356,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         if (wall1.getWidth() == 0 && wall2.getWidth() == 0) {
             if (wall2.getX() > wall1.getX() + door.distFromStart) {
                 // Not possible to mirror
-                return 0;
+                return -1;
             } else {
                 return (int) (wall1.getX() + door.distFromStart - wall2.getX());
             }
@@ -362,7 +366,7 @@ public class RoomController extends FloorObjectController<Room, RoomLabel> {
         if (wall1.getLength() == 0 && wall2.getLength() == 0) {
             if (wall2.getY() > wall1.getY() + door.distFromStart) {
                 // Not possible to mirror
-                return 0;
+                return -1;
             } else {
                 return (int) (wall1.getY() + door.distFromStart - wall2.getY());
             }
